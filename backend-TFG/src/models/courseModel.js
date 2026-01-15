@@ -11,7 +11,7 @@ class CourseModel {
             return rows;
         } catch (error) {
             console.error('Error en getAll courses:', error);
-            return [];
+            throw error;
         }
     }
 
@@ -48,7 +48,7 @@ class CourseModel {
             return rows;
         } catch (error) {
             console.error('Error en getSections:', error);
-            return [];
+            throw error;
         }
     }
 

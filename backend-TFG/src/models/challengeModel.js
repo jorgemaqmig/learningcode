@@ -10,7 +10,7 @@ exports.getAll = async (userPlan = 'Free') => {
         return rows;
     } catch (error) {
         console.error('Error en getAll challenges:', error);
-        return [];
+        throw error;
     }
 };
 

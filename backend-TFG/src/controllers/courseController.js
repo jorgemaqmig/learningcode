@@ -9,7 +9,11 @@ class CourseController {
             res.json(courses);
         } catch (error) {
             console.error('Error getting courses:', error);
-            res.status(500).json({ message: 'Error al obtener los cursos', error: error.message });
+            res.status(500).json({
+                message: 'Error al obtener los cursos',
+                error: error.message,
+                details: error.stack
+            });
         }
     }
 
@@ -39,7 +43,7 @@ class CourseController {
 
             if (userId) {
                 const completedSections = await ProgressModel.getCompletedSectionsForCourse(userId, courseId);
-                
+
                 const sectionsWithProgress = sections.map(section => ({
                     ...section,
                     completado: completedSections.includes(section.id)
@@ -73,8 +77,8 @@ class CourseController {
             const userPlan = req.query.userPlan;
 
             if (userPlan !== 'Premium') {
-                return res.status(403).json({ 
-                    message: 'Este contenido es exclusivo para usuarios Premium' 
+                return res.status(403).json({
+                    message: 'Este contenido es exclusivo para usuarios Premium'
                 });
             }
 

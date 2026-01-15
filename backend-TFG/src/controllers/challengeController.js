@@ -8,7 +8,11 @@ exports.getAllChallenges = async (req, res) => {
         res.json(challenges);
     } catch (error) {
         console.error('Error en getAllChallenges:', error);
-        res.status(500).json({ message: 'Error al obtener los retos', error: error.message });
+        res.status(500).json({
+            message: 'Error al obtener los retos',
+            error: error.message,
+            details: error.stack
+        });
     }
 };
 
@@ -18,7 +22,7 @@ exports.getChallengeById = async (req, res) => {
         const challengeId = req.params.id;
         const userPlan = req.query.userPlan || 'Free';
         const challenge = await ChallengeModel.getById(challengeId, userPlan);
-        
+
         if (challenge) {
             res.json(challenge);
         } else {
