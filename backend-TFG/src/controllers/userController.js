@@ -49,24 +49,24 @@ class UserController {
             if (!email || !password) {
                 return res.status(400).json({ success: false, message: 'Email y contraseña requeridos' });
             }
-    
+
             // Busca el usuario por email
             const user = await UserModel.findByEmail(email);
             if (!user) {
                 return res.status(401).json({ success: false, message: 'Usuario no encontrado' });
             }
-    
+
             // Verifica la contraseña
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
                 return res.status(401).json({ success: false, message: 'Contraseña incorrecta' });
             }
-    
+
             const { password: _, ...userWithoutPassword } = user;
-    
+
             // Generar token JWT
             const token = jwt.sign(
-                { 
+                {
                     id: user.id,
                     email: user.email,
                     username: user.username
@@ -74,27 +74,31 @@ class UserController {
                 process.env.JWT_SECRET || 'tu_clave_secreta',
                 { expiresIn: '24h' }
             );
-    
-            res.json({ 
-                success: true, 
+
+            res.json({
+                success: true,
                 user: userWithoutPassword,
                 token: token
             });
         } catch (error) {
             console.error('Error en login:', error);
-            res.status(500).json({ success: false, message: 'Error al iniciar sesión' });
+            res.status(500).json({
+                success: false,
+                message: 'Error al iniciar sesión',
+                details: error.message
+            });
         }
     }
 
     static async getProfile(req, res) {
         try {
-            
+
             const userId = req.user.id;
 
             const user = await UserModel.findById(userId);
-            
+
             if (!user) {
-                return res.status(404).json({ 
+                return res.status(404).json({
                     message: 'Usuario no encontrado',
                     details: `No se encontró ningún usuario con el ID: ${userId}`
                 });
@@ -122,15 +126,15 @@ class UserController {
             if (req.body.email) {
                 updateData.email = req.body.email;
             }
-            
+
             // Manejar el cambio de contraseña
             if (req.body.currentPassword && req.body.newPassword) {
                 // Verificar la contraseña actual
-                const user = await UserModel.findById(userId, true); 
+                const user = await UserModel.findById(userId, true);
                 if (!user) {
-                    return res.status(404).json({ 
+                    return res.status(404).json({
                         success: false,
-                        message: 'Usuario no encontrado' 
+                        message: 'Usuario no encontrado'
                     });
                 }
 
@@ -145,9 +149,9 @@ class UserController {
                 try {
                     const isMatch = await bcrypt.compare(req.body.currentPassword, user.password);
                     if (!isMatch) {
-                        return res.status(400).json({ 
+                        return res.status(400).json({
                             success: false,
-                            message: 'La contraseña actual es incorrecta' 
+                            message: 'La contraseña actual es incorrecta'
                         });
                     }
                     updateData.password = req.body.newPassword;
@@ -166,7 +170,7 @@ class UserController {
 
                 try {
                     const uploadDir = path.join(__dirname, '../../uploads/profileimages');
-                    
+
                     await ensureDirectoryExists(uploadDir);
 
                     const avatarName = `${userId}-${Date.now()}${path.extname(req.file.originalname)}`;
@@ -174,7 +178,7 @@ class UserController {
 
                     // Mover el archivo
                     await fs.rename(req.file.path, uploadPath);
-                    
+
                     updateData.avatar = avatarName;
 
                     // Eliminar la foto anterior si existe y no es la default
@@ -184,7 +188,7 @@ class UserController {
                         try {
                             await fs.unlink(oldPicPath);
                         } catch (err) {
-                          
+
                         }
                     }
                 } catch (error) {
@@ -206,14 +210,14 @@ class UserController {
             const success = await UserModel.updateProfile(userId, updateData);
 
             if (!success) {
-                return res.status(400).json({ 
+                return res.status(400).json({
                     success: false,
-                    message: 'No se pudo actualizar el perfil' 
+                    message: 'No se pudo actualizar el perfil'
                 });
             }
 
             const updatedUser = await UserModel.findById(userId);
-            
+
             res.json({
                 success: true,
                 user: updatedUser,
@@ -222,10 +226,10 @@ class UserController {
         } catch (error) {
             console.error('Error detallado al actualizar el perfil:', error);
             console.error('Stack trace:', error.stack);
-            res.status(500).json({ 
+            res.status(500).json({
                 success: false,
                 message: 'Error interno del servidor',
-                details: error.message 
+                details: error.message
             });
         }
     }
@@ -244,7 +248,7 @@ class UserController {
             }
 
             const imagePath = path.join(uploadDir, user.avatar);
-            
+
             // Verificar si el archivo existe
             try {
                 await fs.access(imagePath);
@@ -255,10 +259,10 @@ class UserController {
             }
         } catch (error) {
             console.error('Error al obtener la imagen de perfil:', error);
-            res.status(500).json({ 
+            res.status(500).json({
                 success: false,
                 message: 'Error al obtener la imagen de perfil',
-                details: error.message 
+                details: error.message
             });
         }
     }
@@ -297,7 +301,7 @@ class UserController {
 
             // Obtener el usuario actualizado
             const updatedUser = await UserModel.findById(userId);
-            
+
             res.json({
                 success: true,
                 message: `Plan actualizado a ${plan} exitosamente`,
