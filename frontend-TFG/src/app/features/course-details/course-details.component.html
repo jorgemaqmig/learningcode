@@ -1,187 +1,198 @@
-<div class="container mt-5">
-  <div class="row">
-    <div class="col-lg-8 mx-auto">
-      <div class="card">
-        <div class="card-body">
-          <h1 class="card-title text-center mb-4">{{course?.title}}</h1>
-          
-          <div class="course-info mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <span class="badge bg-primary">Nivel: {{course?.difficulty_level}}</span>
-              <span><i class="bi bi-clock"></i> {{course?.duration_minutes}} minutos</span>
-              <span class="badge bg-warning text-dark" *ngIf="course?.is_premium">Premium</span>
+<div class="course-details-page">
+  <!-- Animated Background -->
+  <div class="animated-bg">
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="loader">
+      <div class="code-loader">
+        <span class="bracket">&lt;</span>
+        <span class="text">Loading</span>
+        <span class="bracket">/&gt;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-container" *ngIf="error">
+    <div class="error-card glass-card">
+      <div class="error-icon">
+        <i class="bi bi-bug"></i>
+      </div>
+      <h3>Error al cargar</h3>
+      <p>{{error}}</p>
+      <button class="btn-retry" routerLink="/courses">
+        <i class="bi bi-arrow-left"></i> Volver a cursos
+      </button>
+    </div>
+  </div>
+
+  <!-- Course Content -->
+  <div class="course-wrapper" *ngIf="!loading && !error && course">
+
+    <!-- Hero Section -->
+    <div class="course-hero glass-card">
+      <div class="hero-content">
+        <div class="course-icon">
+          <div class="icon-glow"></div>
+          <i class="bi bi-code-square"></i>
+        </div>
+
+        <div class="hero-info">
+          <div class="course-badges">
+            <span class="badge badge-level" [ngClass]="{
+              'level-beginner': course?.difficulty_level === 'Principiante',
+              'level-intermediate': course?.difficulty_level === 'Intermedio',
+              'level-advanced': course?.difficulty_level === 'Avanzado'
+            }">
+              <i class="bi bi-speedometer2"></i>
+              {{course?.difficulty_level}}
+            </span>
+            <span class="badge badge-duration">
+              <i class="bi bi-clock-history"></i>
+              {{course?.duration_minutes}} min
+            </span>
+            <span class="badge badge-premium" *ngIf="course?.is_premium">
+              <i class="bi bi-gem"></i>
+              Premium
+            </span>
+          </div>
+
+          <h1 class="course-title">{{course?.title}}</h1>
+
+          <p class="course-excerpt">{{course?.description}}</p>
+
+          <div class="hero-stats">
+            <div class="stat">
+              <i class="bi bi-layers"></i>
+              <span>{{courseSections?.length || 0}} módulos</span>
+            </div>
+            <div class="stat">
+              <i class="bi bi-person-check"></i>
+              <span>Certificado incluido</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Ring (if has progress) -->
+      <div class="progress-ring-container" *ngIf="hasProgress">
+        <svg class="progress-ring" viewBox="0 0 120 120">
+          <circle class="progress-ring-bg" cx="60" cy="60" r="52" />
+          <circle class="progress-ring-fill" cx="60" cy="60" r="52" [style.strokeDashoffset]="getProgressOffset()" />
+        </svg>
+        <div class="progress-text">
+          <span class="progress-value">{{getProgressPercentage()}}%</span>
+          <span class="progress-label">completado</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions Bar -->
+    <div class="quick-actions glass-card">
+      <button class="action-btn primary" (click)="startCourse()"
+        [disabled]="course?.is_premium && userPlan !== 'Premium'">
+        <div class="btn-icon">
+          <i class="bi" [ngClass]="hasProgress ? 'bi-play-fill' : 'bi-rocket-takeoff-fill'"></i>
+        </div>
+        <div class="btn-text">
+          <span class="btn-label">{{ hasProgress ? 'Continuar' : 'Comenzar' }}</span>
+          <span class="btn-sublabel">{{ hasProgress ? 'Desde donde lo dejaste' : 'Tu viaje de aprendizaje' }}</span>
+        </div>
+        <i class="bi bi-arrow-right"></i>
+      </button>
+
+      <div class="premium-lock-banner" *ngIf="course?.is_premium && userPlan !== 'Premium'">
+        <i class="bi bi-lock-fill"></i>
+        <span>Curso exclusivo Premium</span>
+        <a routerLink="/pricing" class="unlock-btn">
+          <i class="bi bi-gem"></i> Desbloquear
+        </a>
+      </div>
+    </div>
+
+    <!-- Course Modules -->
+    <div class="modules-section">
+      <div class="section-header">
+        <div class="header-left">
+          <div class="header-icon">
+            <i class="bi bi-stack"></i>
+          </div>
+          <div class="header-text">
+            <h2>Programa del curso</h2>
+            <p>{{courseSections?.length || 0}} módulos • Aprende paso a paso</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modules-timeline">
+        <div *ngFor="let section of courseSections; let i = index; let last = last" class="module-card glass-card"
+          [class.completed]="section.completado" [class.locked]="isPremiumLocked(section)"
+          [class.current]="!section.completado && !isPremiumLocked(section) && isNextModule(i)">
+
+          <div class="module-connector" *ngIf="!last">
+            <div class="connector-line" [class.completed]="section.completado"></div>
+          </div>
+
+          <div class="module-index">
+            <span class="index-number" *ngIf="!section.completado">{{i + 1}}</span>
+            <i class="bi bi-check-lg" *ngIf="section.completado"></i>
+          </div>
+
+          <div class="module-content">
+            <div class="module-header">
+              <h3 class="module-title">{{section.title}}</h3>
+              <div class="module-tags">
+                <span class="tag tag-premium" *ngIf="section.is_premium">
+                  <i class="bi bi-gem"></i>
+                </span>
+              </div>
             </div>
 
-            <h4>Descripción del Curso</h4>
-            <p class="lead">{{course?.description}}</p>
-            
-            <h4>Apartados del Curso</h4>
-            <div class="list-group mb-4">
-              <div *ngFor="let section of courseSections" class="list-group-item">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>
-                    <i class="bi" [class.bi-lock-fill]="isPremiumLocked(section)" [class.bi-unlock-fill]="!isPremiumLocked(section)"></i>
-                    {{section.title}}
-                    <span class="badge bg-warning text-dark ms-2" *ngIf="section.is_premium">Premium</span>
-                    <span class="badge bg-success ms-2" *ngIf="section.completado">Completado</span>
-                  </div>
-                </div>
-                
-                <div *ngIf="isPremiumLocked(section)" class="premium-lock-message mt-2 text-muted">
-                  <small>
-                    <i class="bi bi-info-circle"></i>
-                    Este apartado es exclusivo para usuarios Premium
-                    <a routerLink="/pricing" class="ms-2 text-warning">Actualizar a Premium</a>
-                  </small>
-                </div>
-              </div>
+            <div class="module-status">
+              <span class="status completed" *ngIf="section.completado">
+                <i class="bi bi-patch-check-fill"></i> Completado
+              </span>
+              <span class="status locked" *ngIf="isPremiumLocked(section)">
+                <i class="bi bi-lock-fill"></i> Requiere Premium
+              </span>
+              <span class="status available" *ngIf="!section.completado && !isPremiumLocked(section)">
+                <i class="bi bi-unlock-fill"></i> Disponible
+              </span>
             </div>
-            
-            <div class="text-center">
-              <button class="btn btn-success btn-lg" (click)="startCourse()" [disabled]="course?.is_premium && userPlan !== 'Premium'">
-                {{ hasProgress ? 'Continuar curso' : 'Comenzar curso' }}
-              </button>
-              
-              <div *ngIf="course?.is_premium && userPlan !== 'Premium'" class="mt-3">
-                <a routerLink="/pricing" class="text-warning">
-                  <i class="bi bi-star-fill"></i>
-                  Actualiza a Premium para acceder a este curso
-                </a>
-              </div>
+          </div>
+
+          <div class="module-action">
+            <button class="module-btn" *ngIf="!isPremiumLocked(section)" (click)="goToSection(section)">
+              <i class="bi" [ngClass]="section.completado ? 'bi-arrow-repeat' : 'bi-play-fill'"></i>
+            </button>
+            <div class="locked-icon" *ngIf="isPremiumLocked(section)">
+              <i class="bi bi-lock-fill"></i>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Premium Upgrade Section -->
+    <div class="upgrade-section glass-card" *ngIf="course?.is_premium && userPlan !== 'Premium'">
+      <div class="upgrade-content">
+        <div class="upgrade-icon">
+          <i class="bi bi-gem"></i>
+        </div>
+        <div class="upgrade-text">
+          <h3>Desbloquea este curso y más</h3>
+          <p>Accede a todos los cursos premium, certificados y soporte prioritario</p>
+        </div>
+        <a routerLink="/pricing" class="upgrade-btn">
+          <span>Ver planes Premium</span>
+          <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+    </div>
   </div>
 </div>
-
-<div class="text-center mt-4" *ngIf="loading">
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Cargando...</span>
-  </div>
-</div>
-
-<div class="alert alert-danger mt-4" *ngIf="error">
-  {{error}}
-</div>
-
-<style>
-.course-details {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.course-header {
-  margin-bottom: 2rem;
-}
-
-.course-meta {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.premium-badge {
-  background-color: #ffd700;
-  color: #000;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-weight: bold;
-}
-
-.sections-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.section-item {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1rem;
-}
-
-.section-item.premium {
-  border-color: #ffd700;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.section-badges {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.completed-badge {
-  background-color: #4caf50;
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-}
-
-.premium-lock {
-  text-align: center;
-  padding: 2rem;
-  background-color: #f9f9f9;
-  border-radius: 4px;
-}
-
-.premium-lock i {
-  font-size: 2rem;
-  color: #ffd700;
-  margin-bottom: 1rem;
-}
-
-.upgrade-button {
-  display: inline-block;
-  background-color: #ffd700;
-  color: #000;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  text-decoration: none;
-  margin-top: 1rem;
-  font-weight: bold;
-}
-
-.course-actions {
-  margin-top: 2rem;
-  text-align: center;
-}
-
-.start-button {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 4px;
-  font-size: 1.1rem;
-  cursor: pointer;
-}
-
-.start-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.upgrade-link {
-  display: block;
-  margin-top: 1rem;
-  color: #666;
-  text-decoration: none;
-}
-
-.loading, .error {
-  text-align: center;
-  padding: 2rem;
-}
-
-.error {
-  color: #f44336;
-}
-</style>

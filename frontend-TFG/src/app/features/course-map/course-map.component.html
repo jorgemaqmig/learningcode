@@ -1,434 +1,201 @@
-<!-- Mensaje cuando no hay usuario autenticado -->
-<div *ngIf="!userId" class="alert alert-warning text-center my-4">
-  <h4>Inicia sesión para ver tu progreso</h4>
-  <p>Necesitas iniciar sesión para ver y guardar tu progreso en este curso.</p>
+<!-- Auth Warning -->
+<div *ngIf="!userId" class="auth-warning">
+  <div class="auth-card glass-card">
+    <div class="auth-icon">
+      <i class="bi bi-person-lock"></i>
+    </div>
+    <h3>Inicia sesión para continuar</h3>
+    <p>Necesitas iniciar sesión para ver y guardar tu progreso en este curso.</p>
+    <a routerLink="/login" class="btn-auth">
+      <i class="bi bi-box-arrow-in-right"></i>
+      Iniciar sesión
+    </a>
+  </div>
 </div>
 
-<!-- Contenido del curso solo visible para usuarios autenticados -->
-<div *ngIf="userId" class="course-layout">
-  <aside class="apartados-sidebar">
-    <div class="sidebar-header">
-      <h4 class="mb-3">Contenido del Curso</h4>
-      <div class="progress custom-progress-bar mb-3">
-        <div class="progress-bar" role="progressbar" [style.width]="progresoCurso + '%'" [attr.aria-valuenow]="progresoCurso" aria-valuemin="0" aria-valuemax="100">
-          <span *ngIf="progresoCurso > 10">{{ progresoCurso }}%</span>
+<!-- Course Content Layout -->
+<div *ngIf="userId" class="course-page">
+  <!-- Animated Background -->
+  <div class="animated-bg">
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+  </div>
+
+  <div class="course-layout">
+    <!-- Sidebar -->
+    <aside class="course-sidebar glass-card">
+      <!-- Course Info Header -->
+      <div class="sidebar-header">
+        <div class="course-mini-info">
+          <h4>{{curso?.title || 'Contenido del Curso'}}</h4>
+          <div class="progress-wrapper">
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" [style.width.%]="progresoCurso"></div>
+            </div>
+            <span class="progress-text">{{progresoCurso}}% completado</span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="apartados-container">
-      <ul class="apartados-list">
-        <li 
-          *ngFor="let apartado of apartados; let i = index"
-          class="apartado-item"
-          [class.selected]="i === selectedIndex"
-          [class.premium]="apartado.is_premium"
-          [class.completed]="apartado.completado"
-          (click)="selectApartado(i)">
-          <div class="apartado-info">
-            <span class="apartado-nombre">
-              <i class="bi" [class.bi-lock-fill]="isPremiumLocked(apartado)" [class.bi-unlock-fill]="!isPremiumLocked(apartado)"></i>
-              {{ apartado.nombre }}
-            </span>
-            <div class="apartado-badges">
-              <span class="badge bg-warning text-dark" *ngIf="apartado.is_premium">Premium</span>
-              <span class="badge bg-success" *ngIf="apartado.completado">
-                <i class="bi bi-check-circle-fill"></i>
+
+      <!-- Sections List -->
+      <div class="sections-container">
+        <div class="sections-list">
+          <div *ngFor="let apartado of apartados; let i = index" class="section-item"
+            [class.active]="i === selectedIndex" [class.completed]="apartado.completado"
+            [class.premium]="apartado.is_premium" [class.locked]="isPremiumLocked(apartado)"
+            (click)="selectApartado(i)">
+
+            <div class="section-index">
+              <span *ngIf="!apartado.completado">{{i + 1}}</span>
+              <i *ngIf="apartado.completado" class="bi bi-check-lg"></i>
+            </div>
+
+            <div class="section-info">
+              <span class="section-name">{{apartado.nombre}}</span>
+              <div class="section-tags">
+                <span class="tag tag-premium" *ngIf="apartado.is_premium">
+                  <i class="bi bi-gem"></i>
+                </span>
+                <span class="tag tag-locked" *ngIf="isPremiumLocked(apartado)">
+                  <i class="bi bi-lock-fill"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="apartados.length === 0" class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>No hay apartados disponibles</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content-area">
+      <ng-container *ngIf="apartados[selectedIndex] as apartado">
+
+        <!-- Content Header -->
+        <div class="content-header glass-card">
+          <div class="header-info">
+            <div class="header-badges">
+              <span class="badge badge-section">Módulo {{selectedIndex + 1}}</span>
+              <span class="badge badge-premium" *ngIf="apartado.is_premium">
+                <i class="bi bi-gem"></i> Premium
+              </span>
+              <span class="badge badge-completed" *ngIf="apartado.completado">
+                <i class="bi bi-check-circle-fill"></i> Completado
               </span>
             </div>
+            <h1 class="content-title">{{apartado.nombre}}</h1>
           </div>
-        </li>
-        <li *ngIf="apartados.length === 0" class="apartado-item empty">
-          No hay apartados para este curso.
-        </li>
-      </ul>
-    </div>
-  </aside>
 
-  <section class="apartado-content">
-    <ng-container *ngIf="apartados[selectedIndex] as apartado">
-      <div class="apartado-header">
-        <h3>{{ apartado.nombre }}</h3>
-        <div class="apartado-actions">
-          <span class="badge bg-warning text-dark me-2" *ngIf="apartado.is_premium">
-            <i class="bi bi-star-fill me-1"></i>
-            Premium
-          </span>
-          <button *ngIf="!apartado.completado && !isPremiumLocked(apartado)" 
-                  class="btn btn-success" 
-                  (click)="marcarComoRealizado(selectedIndex)">
-            <i class="bi bi-check-circle me-1"></i>
-            Marcar como realizado
-          </button>
-          <button *ngIf="apartado.completado" 
-                  class="btn btn-outline-warning" 
-                  (click)="desmarcarComoRealizado(selectedIndex)">
-            <i class="bi bi-arrow-counterclockwise me-1"></i>
-            Repetir apartado
-          </button>
+          <div class="header-actions">
+            <button *ngIf="!apartado.completado && !isPremiumLocked(apartado)" class="btn-action btn-complete"
+              (click)="marcarComoRealizado(selectedIndex)">
+              <i class="bi bi-check-circle"></i>
+              <span>Marcar completado</span>
+            </button>
+            <button *ngIf="apartado.completado" class="btn-action btn-repeat"
+              (click)="desmarcarComoRealizado(selectedIndex)">
+              <i class="bi bi-arrow-repeat"></i>
+              <span>Repetir</span>
+            </button>
+          </div>
         </div>
-      </div>
 
-      <!-- Vista previa del contenido premium -->
-      <div *ngIf="isPremiumLocked(apartado)" class="premium-preview">
-        <div class="premium-preview-content">
-          <div class="premium-header">
-            <i class="bi bi-star-fill text-warning"></i>
-            <h4>Contenido Premium</h4>
-          </div>
-          
-          <!-- Vista previa del contenido -->
-          <div class="preview-section">
-            <h5>Lo que incluye este apartado:</h5>
-            <ul class="preview-features">
-              <li *ngFor="let bloque of apartado.content?.slice(0, 2)">
-                <i class="bi" [ngClass]="{
-                  'bi-file-text': bloque.tipo === 'texto',
-                  'bi-code-square': bloque.tipo === 'codigo',
-                  'bi-image': bloque.tipo === 'imagen'
-                }"></i>
-                <span>{{ getPreviewText(bloque) }}</span>
-              </li>
-              <li *ngIf="apartado.content && apartado.content.length > 2">
-                <i class="bi bi-plus-circle"></i>
-                <span>Y {{ apartado.content.length - 2 }} recursos más...</span>
-              </li>
-            </ul>
-          </div>
+        <!-- Premium Locked Content -->
+        <div *ngIf="isPremiumLocked(apartado)" class="premium-locked glass-card">
+          <div class="locked-content">
+            <div class="locked-icon">
+              <i class="bi bi-gem"></i>
+            </div>
+            <h2>Contenido Premium</h2>
+            <p>Este módulo es exclusivo para usuarios Premium</p>
 
-          <div class="premium-cta">
-            <p>Actualiza a Premium para acceder a todo el contenido exclusivo</p>
-            <a routerLink="/pricing" class="btn btn-warning btn-lg">
-              <i class="bi bi-star-fill me-2"></i>
-              Actualizar a Premium
-            </a>
-            <div class="premium-benefits mt-3">
-              <small>Al actualizar obtendrás:</small>
+            <div class="preview-features" *ngIf="apartado.content && apartado.content.length > 0">
+              <h4>Lo que incluye:</h4>
               <ul>
-                <li><i class="bi bi-check-circle-fill"></i> Acceso a todo el contenido premium</li>
-                <li><i class="bi bi-check-circle-fill"></i> Recursos exclusivos</li>
-                <li><i class="bi bi-check-circle-fill"></i> Ejercicios prácticos</li>
+                <li *ngFor="let bloque of apartado.content?.slice(0, 3)">
+                  <i class="bi" [ngClass]="{
+                    'bi-file-text': bloque.tipo === 'texto',
+                    'bi-code-square': bloque.tipo === 'codigo',
+                    'bi-image': bloque.tipo === 'imagen'
+                  }"></i>
+                  <span>{{getPreviewText(bloque)}}</span>
+                </li>
+                <li *ngIf="apartado.content && apartado.content.length > 3">
+                  <i class="bi bi-plus-circle"></i>
+                  <span>Y {{apartado.content.length - 3}} recursos más...</span>
+                </li>
               </ul>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Contenido normal del apartado -->
-      <ng-container *ngIf="!isPremiumLocked(apartado)">
-        <div *ngIf="apartado.content && apartado.content.length" class="apartado-content-blocks">
-          <div *ngFor="let bloque of apartado.content" class="content-block">
-            <div *ngIf="bloque.tipo === 'texto'" class="text-block">
-              <p [innerHTML]="bloque.contenido"></p>
-            </div>
-            <div *ngIf="bloque.tipo === 'codigo'" class="code-block">
-              <pre><code [innerText]="bloque.contenido" [attr.data-lang]="bloque.lenguaje"></code></pre>
-            </div>
-            <div *ngIf="bloque.tipo === 'imagen'" class="image-block">
-              <img [src]="bloque.url" [alt]="bloque.descripcion || 'Imagen del curso'" class="img-fluid rounded">
-            </div>
+            <a routerLink="/pricing" class="btn-upgrade">
+              <i class="bi bi-gem"></i>
+              <span>Actualizar a Premium</span>
+              <i class="bi bi-arrow-right"></i>
+            </a>
           </div>
         </div>
-        <div *ngIf="!apartado.content || !apartado.content.length" class="no-content">
-          <p>No hay contenido disponible para este apartado.</p>
+
+        <!-- Regular Content -->
+        <div *ngIf="!isPremiumLocked(apartado)" class="content-body">
+          <div *ngIf="apartado.content && apartado.content.length" class="content-blocks">
+            <div *ngFor="let bloque of apartado.content" class="content-block glass-card">
+
+              <!-- Text Block -->
+              <div *ngIf="bloque.tipo === 'texto'" class="block-text">
+                <div class="text-content" [innerHTML]="bloque.contenido"></div>
+              </div>
+
+              <!-- Code Block -->
+              <div *ngIf="bloque.tipo === 'codigo'" class="block-code">
+                <div class="code-header">
+                  <div class="code-dots">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <span class="code-lang">{{bloque.lenguaje || 'code'}}</span>
+                </div>
+                <pre class="code-content"><code [innerText]="bloque.contenido"></code></pre>
+              </div>
+
+              <!-- Image Block -->
+              <div *ngIf="bloque.tipo === 'imagen'" class="block-image">
+                <img [src]="bloque.url" [alt]="bloque.descripcion || 'Imagen del curso'" loading="lazy">
+                <p *ngIf="bloque.descripcion" class="image-caption">{{bloque.descripcion}}</p>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!apartado.content || !apartado.content.length" class="empty-content glass-card">
+            <i class="bi bi-file-earmark-x"></i>
+            <h3>Sin contenido</h3>
+            <p>No hay contenido disponible para este apartado.</p>
+          </div>
+
+          <!-- Navigation -->
+          <div class="content-navigation">
+            <button class="nav-btn nav-prev" [disabled]="selectedIndex === 0"
+              (click)="selectApartado(selectedIndex - 1)">
+              <i class="bi bi-arrow-left"></i>
+              <span>Anterior</span>
+            </button>
+
+            <button class="nav-btn nav-next" [disabled]="selectedIndex === apartados.length - 1"
+              (click)="selectApartado(selectedIndex + 1)">
+              <span>Siguiente</span>
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
         </div>
       </ng-container>
-    </ng-container>
 
-    <div *ngIf="error" class="alert alert-danger">
-      {{ error }}
-    </div>
-  </section>
+      <!-- Error State -->
+      <div *ngIf="error" class="error-state glass-card">
+        <i class="bi bi-exclamation-triangle"></i>
+        <p>{{error}}</p>
+      </div>
+    </main>
+  </div>
 </div>
-
-<style>
-.course-layout {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 2rem;
-  padding: 1rem;
-  min-height: calc(100vh - 100px);
-}
-
-.apartados-sidebar {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  height: fit-content;
-  position: sticky;
-  top: 1rem;
-}
-
-.sidebar-header {
-  border-bottom: 1px solid #e9ecef;
-  padding-bottom: 1rem;
-  margin-bottom: 1rem;
-}
-
-.apartados-container {
-  max-height: calc(100vh - 250px);
-  overflow-y: auto;
-}
-
-.apartados-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.apartado-item {
-  padding: 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-bottom: 0.5rem;
-}
-
-.apartado-item:hover {
-  background-color: #f8f9fa;
-  transform: translateX(4px);
-}
-
-.apartado-item.selected {
-  background-color: #e9ecef;
-  border-left: 4px solid #0d6efd;
-}
-
-.apartado-item.premium {
-  background-color: rgba(255, 193, 7, 0.1);
-  border: 1px solid rgba(255, 193, 7, 0.3);
-  position: relative;
-}
-
-.apartado-item.premium::after {
-  content: '✨';
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 0.2;
-  font-size: 1.2rem;
-}
-
-.apartado-item.premium:hover {
-  background-color: rgba(255, 193, 7, 0.15);
-  border-color: rgba(255, 193, 7, 0.4);
-}
-
-.apartado-item.premium.selected {
-  background-color: rgba(255, 193, 7, 0.2);
-  border-left: 4px solid #ffc107;
-}
-
-.apartado-item.completed {
-  border-left: 4px solid #198754;
-}
-
-.apartado-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-
-.apartado-nombre {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-weight: 500;
-  flex: 1;
-}
-
-.apartado-badges {
-  display: flex;
-  gap: 0.5rem;
-  flex-shrink: 0;
-}
-
-.badge.bg-warning {
-  background-color: #fff3cd !important;
-  color: #856404 !important;
-  border: 1px solid #ffeeba;
-  font-weight: 600;
-}
-
-.apartado-content {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.apartado-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.apartado-actions {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.content-block {
-  margin-bottom: 2rem;
-  line-height: 1.6;
-}
-
-.code-block {
-  background: #f8f9fa;
-  padding: 1.5rem;
-  border-radius: 8px;
-  font-family: 'Fira Code', monospace;
-  overflow-x: auto;
-}
-
-.code-block pre {
-  margin: 0;
-}
-
-.text-block {
-  font-size: 1.1rem;
-  color: #212529;
-}
-
-.image-block img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.premium-preview {
-  background: linear-gradient(135deg, #fff8e5 0%, #fff 100%);
-  border: 2px solid #ffd700;
-  border-radius: 12px;
-  padding: 2rem;
-  margin: 1rem 0;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.1);
-}
-
-.premium-preview::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="3">✨</text></svg>');
-  opacity: 0.1;
-  pointer-events: none;
-}
-
-.premium-preview-content {
-  position: relative;
-  z-index: 1;
-}
-
-.premium-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.premium-header i {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-}
-
-.preview-section {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.preview-features {
-  list-style: none;
-  padding: 0;
-  margin: 1rem 0;
-}
-
-.preview-features li {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0;
-  color: #666;
-}
-
-.preview-features i {
-  color: #ffc107;
-}
-
-.premium-cta {
-  text-align: center;
-  padding: 2rem 0 1rem;
-}
-
-.premium-benefits {
-  text-align: left;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-.premium-benefits ul {
-  list-style: none;
-  padding: 0;
-  margin: 0.5rem 0;
-}
-
-.premium-benefits li {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0;
-  color: #666;
-}
-
-.premium-benefits i {
-  color: #28a745;
-}
-
-.btn-warning {
-  background-color: #ffc107;
-  border-color: #ffc107;
-  color: #000;
-  font-weight: 500;
-  padding: 0.75rem 2rem;
-  transition: all 0.2s ease;
-}
-
-.btn-warning:hover {
-  background-color: #ffb300;
-  border-color: #ffb300;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
-}
-
-.custom-progress-bar {
-  height: 8px;
-  border-radius: 4px;
-  background-color: #e9ecef;
-}
-
-.progress-bar {
-  background-color: #198754;
-  border-radius: 4px;
-  transition: width 0.3s ease;
-}
-
-.no-content {
-  text-align: center;
-  padding: 2rem;
-  color: #6c757d;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-</style>

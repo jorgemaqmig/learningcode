@@ -18,11 +18,13 @@ export class LessonsComponent implements OnInit {
   searchTerm: string = '';
   selectedLevel: string = '';
   userPlan: 'Free' | 'Premium' = 'Free';
+  loading: boolean = true;
+  error: string | null = null;
 
   constructor(
     private courseService: CourseService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     const currentUser = this.authService.getCurrentUser();
@@ -31,26 +33,31 @@ export class LessonsComponent implements OnInit {
   }
 
   loadCourses() {
-    
+    this.loading = true;
+    this.error = null;
+
     this.courseService.getAllCourses().subscribe({
       next: (data) => {
         this.courses = data;
         this.filteredCourses = data;
+        this.loading = false;
       },
       error: (error) => {
         console.error('Error loading courses:', error);
+        this.error = 'No se pudieron cargar los cursos. Por favor, inténtalo de nuevo.';
+        this.loading = false;
       }
     });
   }
 
   filterCourses() {
-    
+
     this.filteredCourses = this.courses.filter(course => {
-      const matchesSearch = !this.searchTerm || 
+      const matchesSearch = !this.searchTerm ||
         course.title.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         course.description.toLowerCase().includes(this.searchTerm.toLowerCase());
-      
-      const matchesLevel = !this.selectedLevel || 
+
+      const matchesLevel = !this.selectedLevel ||
         course.difficulty_level.toLowerCase() === this.selectedLevel.toLowerCase();
 
       return matchesSearch && matchesLevel;

@@ -16,7 +16,7 @@ app-root {
   min-height: 100vh;
 }
 
-router-outlet + * {
+router-outlet+* {
   flex: 1;
 }
 
@@ -37,38 +37,38 @@ router-outlet + * {
 }
 
 .dark-theme {
-  --primary-bg: #2f3136;        
-  --secondary-bg: #36393f;      
+  --primary-bg: #2f3136;
+  --secondary-bg: #36393f;
   --text-primary: #ffffff;
   --text-secondary: #b9bbbe;
   --border-color: #40444b;
-  --card-bg: #36393f;           
+  --card-bg: #36393f;
   --nav-bg: #202225;
   --nav-text: #ffffff;
-  --link-color: #6c63ff;        
-  --link-hover: #8a7fff;        
-  --button-primary: #6c63ff;    
-  --button-hover: #8a7fff;     
+  --link-color: #6c63ff;
+  --link-hover: #8a7fff;
+  --button-primary: #6c63ff;
+  --button-hover: #8a7fff;
   --shadow: rgba(0, 0, 0, 0.2);
-  --success-color: #43b581;     
-  --warning-color: #faa61a;     
-  --danger-color: #f04747;      
-  --course-card-bg: #2a2d31;    
-  --course-header-bg: #202225;  
+  --success-color: #43b581;
+  --warning-color: #faa61a;
+  --danger-color: #f04747;
+  --course-card-bg: #2a2d31;
+  --course-header-bg: #202225;
 }
 
 .dark-theme .card {
-  background-color: #f8f9fa;    
-  color: #333333;               
-  border-color: #e9ecef;
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
 }
 
 .dark-theme .card-text {
-  color: #535749;               
+  color: var(--text-secondary);
 }
 
 .dark-theme .card-title {
-  color: #272921;               
+  color: var(--text-primary);
 }
 
 body {
@@ -95,7 +95,7 @@ body {
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link:focus,
 .navbar-nav .nav-link.active {
-  color: #6c63ff !important; 
+  color: #6c63ff !important;
 }
 
 .navbar-toggler {
@@ -132,7 +132,12 @@ body {
   border-color: var(--button-hover);
 }
 
-.card, .feature-card, .course-card, .achievement-card, .level-info, .progress-overlay {
+.card,
+.feature-card,
+.course-card,
+.achievement-card,
+.level-info,
+.progress-overlay {
   background-color: var(--card-bg);
   color: var(--text-primary);
   border-color: var(--border-color);
@@ -140,26 +145,61 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.card p, .feature-card p, .course-card p, .achievement-card p, .level-info p, .progress-overlay p {
+.card p,
+.feature-card p,
+.course-card p,
+.achievement-card p,
+.level-info p,
+.progress-overlay p {
   color: var(--text-primary);
 }
 
-.card h1, .card h2, .card h3, .card h4, .card h5, .card h6,
-.feature-card h1, .feature-card h2, .feature-card h3, .feature-card h4, .feature-card h5, .feature-card h6,
-.course-card h1, .course-card h2, .course-card h3, .course-card h4, .course-card h5, .course-card h6,
-.achievement-card h1, .achievement-card h2, .achievement-card h3, .achievement-card h4, .achievement-card h5, .achievement-card h6,
-.level-info h1, .level-info h2, .level-info h3, .level-info h4, .level-info h5, .level-info h6,
-.progress-overlay h1, .progress-overlay h2, .progress-overlay h3, .progress-overlay h4, .progress-overlay h5, .progress-overlay h6 {
+.card h1,
+.card h2,
+.card h3,
+.card h4,
+.card h5,
+.card h6,
+.feature-card h1,
+.feature-card h2,
+.feature-card h3,
+.feature-card h4,
+.feature-card h5,
+.feature-card h6,
+.course-card h1,
+.course-card h2,
+.course-card h3,
+.course-card h4,
+.course-card h5,
+.course-card h6,
+.achievement-card h1,
+.achievement-card h2,
+.achievement-card h3,
+.achievement-card h4,
+.achievement-card h5,
+.achievement-card h6,
+.level-info h1,
+.level-info h2,
+.level-info h3,
+.level-info h4,
+.level-info h5,
+.level-info h6,
+.progress-overlay h1,
+.progress-overlay h2,
+.progress-overlay h3,
+.progress-overlay h4,
+.progress-overlay h5,
+.progress-overlay h6 {
   color: var(--text-primary);
 }
 
 .dark-theme {
-  --primary-bg: #2f3136;        
-  --secondary-bg: #36393f;     
+  --primary-bg: #2f3136;
+  --secondary-bg: #36393f;
   --text-primary: #ffffff;
   --text-secondary: #b9bbbe;
   --border-color: #40444b;
-  --card-bg: #36393f;          
+  --card-bg: #36393f;
   --nav-bg: #202225;
   --nav-text: #ffffff;
   --link-color: #7289da;
@@ -167,16 +207,16 @@ body {
   --button-primary: #7289da;
   --button-hover: #6c63ff;
   --shadow: rgba(0, 0, 0, 0.2);
-  --success-color: #43b581;    
-  --warning-color: #faa61a;    
-  --danger-color: #f04747;      
-  --course-card-bg: #2a2d31;    
-  --course-header-bg: #202225;  
+  --success-color: #43b581;
+  --warning-color: #faa61a;
+  --danger-color: #f04747;
+  --course-card-bg: #2a2d31;
+  --course-header-bg: #202225;
 }
 
-.dark-theme .card, 
-.dark-theme .feature-card, 
-.dark-theme .course-card, 
+.dark-theme .card,
+.dark-theme .feature-card,
+.dark-theme .course-card,
 .dark-theme .achievement-card,
 .dark-theme .level-info,
 .dark-theme .progress-overlay {
@@ -289,11 +329,14 @@ a:hover {
 .text-light {
   color: var(--nav-text) !important;
 }
-*, *::before, *::after {
-  transition: background-color 0.3s ease, 
-              color 0.3s ease, 
-              border-color 0.3s ease, 
-              box-shadow 0.3s ease;
+
+*,
+*::before,
+*::after {
+  transition: background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .navbar .btn-login {
@@ -304,7 +347,7 @@ a:hover {
 }
 
 .navbar .btn-login:hover {
-  background-color: #8a7fff; 
+  background-color: #8a7fff;
   border-color: #8a7fff;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(108, 99, 255, 0.3);

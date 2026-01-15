@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CourseService, Course, CourseSection, CourseResource } from '../../services/course.service';
 import { Subscription } from 'rxjs';
@@ -33,7 +33,7 @@ interface CourseProgress {
 @Component({
   selector: 'app-course-map',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './course-map.component.html',
   styleUrls: ['./course-map.component.css']
 })

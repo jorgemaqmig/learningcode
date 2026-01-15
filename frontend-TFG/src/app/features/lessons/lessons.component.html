@@ -1,62 +1,134 @@
-<div class="container">
-  <div class="search-container text-center mb-5">
-    <div class="search-wrapper">
-      <i class="bi bi-search search-icon"></i>
-      <input 
-        type="text" 
-        class="search-input" 
-        placeholder="Buscar cursos..." 
-        [(ngModel)]="searchTerm"
-        (ngModelChange)="filterCourses()">
-      <select 
-        class="level-select"
-        [(ngModel)]="selectedLevel"
-        (ngModelChange)="filterCourses()">
-        <option value="">Todos los niveles</option>
-        <option value="Principiante">Principiante</option>
-        <option value="Intermedio">Intermedio</option>
-        <option value="Avanzado">Avanzado</option>
-      </select>
-    </div>
+<div class="lessons-page">
+  <!-- Animated Background Orbs -->
+  <div class="animated-bg">
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
   </div>
-  <h1 class="text-center page-title">Nuestros Cursos</h1>
-  <p class="text-muted text-center">Explora nuestra variedad de cursos estructurados en diferentes niveles.</p>
-  
-  <div class="row g-4">
-    <div class="col-md-4" *ngFor="let course of filteredCourses">
-      <div class="card h-100" [class.premium-card]="course.is_premium">
-        <div class="card-body">
-          <div class="badges-container mb-2">
-            <span class="badge bg-primary">Curso</span>
-            <span *ngIf="course.is_premium" class="badge bg-warning ms-2">
-              <i class="bi bi-star-fill me-1"></i>Premium
-            </span>
-          </div>
-          <h5 class="card-title">{{course.title}}</h5>
-          <p class="card-text">{{course.description}}</p>
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <span class="badge" [ngClass]="{
-              'bg-success': course.difficulty_level === 'Principiante',
-              'bg-warning': course.difficulty_level === 'Intermedio',
-              'bg-danger': course.difficulty_level === 'Avanzado'
-            }">Nivel: {{course.difficulty_level}}</span>
-            <span class="text-muted">{{course.duration_minutes}} min</span>
-          </div>
-        </div>
-        <div class="card-footer">
-          <ng-container *ngIf="!isPremiumLocked(course); else lockedContent">
-            <a [routerLink]="['/lessons', course.id]" class="btn btn-primary">Ver Curso</a>
-          </ng-container>
-          <ng-template #lockedContent>
-            <div class="premium-lock">
-              <i class="bi bi-lock-fill"></i>
-              <p class="mb-2">Contenido Premium</p>
-              <a routerLink="/user-settings" class="btn btn-warning">
-                Actualizar a Premium
-              </a>
-            </div>
-          </ng-template>
-        </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="loader">
+      <div class="code-loader">
+        <span class="bracket">&lt;</span>
+        <span class="text">Loading</span>
+        <span class="bracket">/&gt;</span>
       </div>
     </div>
   </div>
+
+  <!-- Error State -->
+  <div class="error-container" *ngIf="error">
+    <div class="error-card glass-card">
+      <div class="error-icon">
+        <i class="bi bi-bug"></i>
+      </div>
+      <h3>Error al cargar</h3>
+      <p>{{error}}</p>
+      <button class="btn-retry" (click)="loadCourses()">
+        <i class="bi bi-arrow-clockwise"></i> Reintentar
+      </button>
+    </div>
+  </div>
+
+  <div class="container" *ngIf="!loading && !error">
+    <!-- Hero Section with Search & Filter -->
+    <div class="hero-section text-center mb-5">
+      <h1 class="page-title">Explora Nuestros <span class="gradient-text">Cursos</span></h1>
+      <p class="page-subtitle">Aprende programación con rutas estructuradas y contenido de alta calidad.</p>
+
+      <div class="search-filter-container glass-card">
+        <div class="search-wrapper">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text" class="search-input" placeholder="¿Qué quieres aprender hoy?" [(ngModel)]="searchTerm"
+            (ngModelChange)="filterCourses()">
+        </div>
+        <div class="filter-wrapper">
+          <i class="bi bi-filter-left filter-icon"></i>
+          <select class="level-select" [(ngModel)]="selectedLevel" (ngModelChange)="filterCourses()">
+            <option value="">Todos los niveles</option>
+            <option value="Principiante">Principiante</option>
+            <option value="Intermedio">Intermedio</option>
+            <option value="Avanzado">Avanzado</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Courses Grid -->
+    <div class="courses-grid row g-4">
+      <div class="col-xl-4 col-lg-6 col-md-6" *ngFor="let course of filteredCourses">
+        <div class="course-card glass-card" [class.premium-card]="course.is_premium">
+          <div class="card-header-img">
+            <div class="course-icon-wrapper">
+              <i class="bi" [ngClass]="{
+                'bi-code-slash': course.difficulty_level === 'Principiante',
+                'bi-braces': course.difficulty_level === 'Intermedio',
+                'bi-terminal-fill': course.difficulty_level === 'Avanzado'
+              }"></i>
+            </div>
+            <div class="badges-wrapper">
+              <span class="badge badge-type">Curso</span>
+              <span *ngIf="course.is_premium" class="badge badge-premium">
+                <i class="bi bi-gem me-1"></i>Premium
+              </span>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <h5 class="course-title">{{course.title}}</h5>
+            <p class="course-desc lead-text">{{course.description}}</p>
+
+            <div class="course-meta">
+              <div class="meta-item">
+                <span class="level-indicator" [ngClass]="{
+                  'level-easy': course.difficulty_level === 'Principiante',
+                  'level-medium': course.difficulty_level === 'Intermedio',
+                  'level-hard': course.difficulty_level === 'Avanzado'
+                }"></span>
+                <span class="meta-text">{{course.difficulty_level}}</span>
+              </div>
+              <div class="meta-item">
+                <i class="bi bi-clock"></i>
+                <span class="meta-text">{{course.duration_minutes}} min</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer-actions">
+            <ng-container *ngIf="!isPremiumLocked(course); else lockedContent">
+              <a [routerLink]="['/lessons', course.id]" class="btn-primary-premium">
+                <span>Comenzar ahora</span>
+                <i class="bi bi-arrow-right"></i>
+              </a>
+            </ng-container>
+            <ng-template #lockedContent>
+              <div class="premium-lock-state">
+                <div class="lock-info">
+                  <i class="bi bi-lock-fill"></i>
+                  <span>Contenido Premium</span>
+                </div>
+                <a routerLink="/user-settings" class="btn-upgrade-premium">
+                  <span>Desbloquear</span>
+                  <i class="bi bi-gem"></i>
+                </a>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty Results -->
+    <div *ngIf="filteredCourses.length === 0" class="empty-results text-center py-5">
+      <div class="empty-icon glass-card mb-4">
+        <i class="bi bi-journal-x"></i>
+      </div>
+      <h2>No se encontraron cursos</h2>
+      <p class="text-muted">Prueba a buscar con otros términos o cambia el nivel.</p>
+      <button class="btn-secondary-premium mt-3" (click)="searchTerm = ''; selectedLevel = ''; filterCourses()">
+        Limpiar filtros
+      </button>
+    </div>
+  </div>
+</div>
