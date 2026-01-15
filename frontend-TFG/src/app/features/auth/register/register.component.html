@@ -1,0 +1,88 @@
+<div class="auth-container d-flex justify-content-center align-items-center min-vh-100">
+  <div class="auth-card shadow-lg p-4 rounded-4" style="max-width: 400px; width: 100%;">
+    <h2 class="mb-4 text-center">Registro</h2>
+    <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="needs-validation" novalidate>
+      <div class="form-group mb-3">
+        <label for="username" class="form-label">Nombre de usuario</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username"
+          [(ngModel)]="registerData.username"
+          #username="ngModel"
+          class="form-control"
+          [class.is-invalid]="username.invalid && (username.dirty || username.touched)"
+          required
+          autocomplete="username">
+        <div class="invalid-feedback" *ngIf="username.invalid && (username.dirty || username.touched)">
+          <span *ngIf="username.errors?.['required']">El nombre de usuario es obligatorio</span>
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email"
+          [(ngModel)]="registerData.email"
+          #email="ngModel"
+          class="form-control"
+          [class.is-invalid]="email.invalid && (email.dirty || email.touched)"
+          required
+          email
+          autocomplete="email">
+        <div class="invalid-feedback" *ngIf="email.invalid && (email.dirty || email.touched)">
+          <span *ngIf="email.errors?.['required']">El email es obligatorio</span>
+          <span *ngIf="email.errors?.['email']">Por favor, introduce un email válido</span>
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password"
+          [(ngModel)]="registerData.password"
+          #password="ngModel"
+          class="form-control"
+          [class.is-invalid]="password.invalid && (password.dirty || password.touched)"
+          required
+          autocomplete="new-password">
+        <div class="invalid-feedback" *ngIf="password.invalid && (password.dirty || password.touched)">
+          <span *ngIf="password.errors?.['required']">La contraseña es obligatoria</span>
+        </div>
+      </div>
+
+      <div class="form-group mb-4">
+        <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+        <input 
+          type="password" 
+          id="confirmPassword" 
+          name="confirmPassword"
+          [(ngModel)]="registerData.confirmPassword"
+          #confirmPassword="ngModel"
+          class="form-control"
+          [class.is-invalid]="confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched)"
+          required
+          autocomplete="new-password">
+        <div class="invalid-feedback" *ngIf="confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched)">
+          <span *ngIf="confirmPassword.errors?.['required']">Debes confirmar la contraseña</span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 rounded-pill py-2" [disabled]="registerForm.invalid || isLoading">
+        <span *ngIf="!isLoading">Registrarse</span>
+        <span *ngIf="isLoading" class="d-flex align-items-center justify-content-center">
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          Registrando...
+        </span>
+      </button>
+    </form>
+
+    <div class="auth-footer mt-4 text-center">
+      <p class="mb-0">¿Ya tienes una cuenta? <a routerLink="/login" [class.disabled]="isLoading">Inicia Sesión</a></p>
+    </div>
+  </div>
+</div>

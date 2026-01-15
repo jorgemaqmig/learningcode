@@ -1,0 +1,208 @@
+.container {
+  padding: 80px 0;
+}
+
+.page-title {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(45deg, #2b4162, #385682);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 3rem;
+}
+.text-muted.text-center {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  border: 1px solid black;
+  border-radius: 15px;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+.premium-card {
+  border: 2px solid #ffd700;
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.95), rgba(255, 215, 0, 0.1));
+}
+
+.premium-card:hover {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.premium-lock {
+  text-align: center;
+  padding: 1rem;
+}
+
+.premium-lock i {
+  font-size: 2rem;
+  color: #ffd700;
+  margin-bottom: 0.5rem;
+}
+
+.premium-lock p {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.badges-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #2b4162;
+  margin-bottom: 1rem;
+}
+
+.card-text {
+  color: #6c757d;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.btn-primary {
+  border-radius: 30px;
+  padding: 12px 30px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  background: linear-gradient(45deg, #2b4162, #385682);
+  border: none;
+  width: 100%;
+}
+
+.btn-warning {
+  border-radius: 30px;
+  padding: 12px 30px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  background: linear-gradient(45deg, #ffd700, #ffb700);
+  border: none;
+  width: 100%;
+  color: #000;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(43, 65, 98, 0.2);
+}
+
+.btn-warning:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(255, 215, 0, 0.2);
+}
+
+.search-container {
+  margin: 2rem 0;
+}
+
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  color: #6c757d;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.search-input:focus {
+  border-color: #86b7fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.level-select {
+  padding: 0.75rem 2rem 0.75rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.level-select:focus {
+  border-color: #86b7fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+:host-context(.dark-theme) .card {
+  background: var(--course-card-bg);
+  border-color: var(--border-color);
+}
+
+:host-context(.dark-theme) .premium-card {
+  border-color: #ffd700;
+  background: linear-gradient(to bottom right, var(--course-card-bg), rgba(255, 215, 0, 0.1));
+}
+
+:host-context(.dark-theme) .card-title {
+  color: var(--text-primary);
+}
+
+:host-context(.dark-theme) .card-text {
+  color: var(--text-secondary);
+}
+
+:host-context(.dark-theme) .search-wrapper {
+  background: var(--course-card-bg);
+  box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+}
+
+:host-context(.dark-theme) .search-input {
+  color: var(--text-primary);
+}
+
+:host-context(.dark-theme) .search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+:host-context(.dark-theme) .level-select {
+  background-color: var(--course-card-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+:host-context(.dark-theme) .page-title {
+  background: linear-gradient(45deg, var(--button-primary), var(--button-hover));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+:host-context(.dark-theme) .btn-primary {
+  background: linear-gradient(45deg, var(--button-primary), var(--button-hover));
+}

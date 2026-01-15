@@ -1,0 +1,18 @@
+.card {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.badge {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+}
+
+.list-group-item {
+  border: none;
+  padding: 0.75rem 0;
+}
+
+.btn-success {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+}

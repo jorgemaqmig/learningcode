@@ -1,0 +1,72 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <div class="profile-avatar">
+      <img [src]="userAvatar" alt="Profile picture">
+    </div>
+    <div class="profile-info">
+      <h1>{{username}}</h1>
+      <div class="stats">
+        <div class="stat-item">
+          <i class="bi bi-book-fill"></i>
+          <span>{{completedCourses.length}} cursos completados</span>
+        </div>
+        <div class="stat-item">
+          <i class="bi bi-hourglass-split"></i>
+          <span>{{inProgressCourses.length}} cursos en progreso</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cursos en Progreso -->
+  <div class="course-section" *ngIf="inProgressCourses.length > 0">
+    <h2><i class="bi bi-hourglass-split"></i> Cursos en Progreso</h2>
+    <div class="course-cards">
+      <div *ngFor="let progress of inProgressCourses" class="course-card">
+        <div class="course-card-header">
+          <h3>{{progress.course?.title || 'Curso ' + progress.course_id}}</h3>
+          <span class="badge" [ngClass]="{'badge-beginner': progress.course?.difficulty_level === 'Principiante',
+                                         'badge-intermediate': progress.course?.difficulty_level === 'Intermedio',
+                                         'badge-advanced': progress.course?.difficulty_level === 'Avanzado'}">
+            {{progress.course?.difficulty_level}}
+          </span>
+        </div>
+        <p class="course-description">{{progress.course?.description}}</p>
+        <div class="progress-info">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="progress.progress_percentage"></div>
+          </div>
+          <p class="progress-text">{{progress.progress_percentage}}% Completado</p>
+        </div>
+        <button class="btn-continue" (click)="continueCourse(progress.course_id)">
+          Continuar Curso
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cursos Completados -->
+  <div class="course-section" *ngIf="completedCourses.length > 0">
+    <h2><i class="bi bi-check-circle-fill"></i> Cursos Completados</h2>
+    <div class="course-cards">
+      <div *ngFor="let progress of completedCourses" class="course-card completed">
+        <div class="course-card-header">
+          <h3>{{progress.course?.title || 'Curso ' + progress.course_id}}</h3>
+          <span class="badge" [ngClass]="{'badge-beginner': progress.course?.difficulty_level === 'Principiante',
+                                         'badge-intermediate': progress.course?.difficulty_level === 'Intermedio',
+                                         'badge-advanced': progress.course?.difficulty_level === 'Avanzado'}">
+            {{progress.course?.difficulty_level}}
+          </span>
+        </div>
+        <p class="course-description">{{progress.course?.description}}</p>
+        <div class="completion-info">
+          <i class="bi bi-calendar-check"></i>
+          <span>Completado el {{progress.completed_at | date:'dd/MM/yyyy'}}</span>
+        </div>
+        <button class="btn-review" (click)="continueCourse(progress.course_id)">
+          Repasar Curso
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

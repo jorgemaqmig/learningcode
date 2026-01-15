@@ -1,0 +1,142 @@
+<!-- Loading State -->
+<div class="container py-5">
+  
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    {{ error }}
+  </div>
+
+  <!-- Search Container -->
+  <div class="search-container text-center mb-5">
+    <div class="search-wrapper">
+      <i class="bi bi-search search-icon"></i>
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Buscar retos..." 
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="filterChallenges()">
+      <select 
+        class="level-select"
+        [(ngModel)]="selectedLevel"
+        (ngModelChange)="filterChallenges()">
+        <option value="">Todos los niveles</option>
+        <option value="Principiante">Principiante</option>
+        <option value="Intermedio">Intermedio</option>
+        <option value="Avanzado">Avanzado</option>
+      </select>
+    </div>
+  </div>
+
+  <h1 class="text-center page-title">Todos los Retos</h1>
+  <p class="text-muted text-center">Pon a prueba tus conocimientos con desafíos prácticos y retos de diferentes niveles.</p>
+
+  <!-- Challenges Grid -->
+  <div *ngIf="!loading && !error" class="row g-4">
+    <div *ngFor="let challenge of filteredChallenges" class="col-md-4">
+      <div class="card h-100" [class.premium-card]="challenge.is_premium">
+        <div class="card-body">
+          <div class="badges-container mb-2">
+            <span class="badge bg-primary">Reto</span>
+            <span *ngIf="challenge.is_premium" class="badge bg-warning ms-2">
+              <i class="bi bi-star-fill me-1"></i>Premium
+            </span>
+          </div>
+          <h5 class="card-title">{{ challenge.title }}</h5>
+          <p class="card-text">{{ challenge.description }}</p>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="badge" [ngClass]="{
+              'bg-success': challenge.difficulty_level === 'Principiante',
+              'bg-warning': challenge.difficulty_level === 'Intermedio',
+              'bg-danger': challenge.difficulty_level === 'Avanzado'
+            }">Nivel: {{ challenge.difficulty_level }}</span>
+            <span class="text-muted">{{ challenge.created_at | date:'shortDate' }}</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <ng-container *ngIf="!challenge.is_premium || (challenge.is_premium && authService.getCurrentUser()?.plan === 'Premium'); else lockedContent">
+            <button 
+              class="btn btn-primary w-100"
+              (click)="startChallenge(challenge.id)">
+              Comenzar Reto
+            </button>
+          </ng-container>
+          <ng-template #lockedContent>
+            <div class="premium-lock">
+              <i class="bi bi-lock-fill"></i>
+              <p class="mb-2">Contenido Premium</p>
+              <a routerLink="/user-settings" class="btn btn-warning">
+                Actualizar a Premium
+              </a>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Challenges Message -->
+    <div *ngIf="challenges.length === 0" class="col-12 text-center py-5">
+      <p class="text-muted">No hay retos disponibles en este momento.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de detalle de reto -->
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showModal" style="background:rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalle del Reto</h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <ng-container *ngIf="modalLoading">
+          <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="!modalLoading && modalError">
+          <div class="alert alert-danger" role="alert">
+            {{ modalError }}
+          </div>
+        </ng-container>
+        <ng-container *ngIf="!modalLoading && !modalError && selectedChallenge">
+          <h2>{{ selectedChallenge.title }}</h2>
+          <p class="description">{{ selectedChallenge.description }}</p>
+          <div class="hints-section" *ngIf="selectedChallenge.hints && (parseHints(selectedChallenge.hints).length > 0)">
+            <button class="btn btn-info mb-2" (click)="showNextHint()" [disabled]="currentHint >= parseHints(selectedChallenge.hints).length">
+              Ver pista
+            </button>
+            <ul class="hints-list">
+              <li *ngFor="let hint of parseHints(selectedChallenge.hints).slice(0, currentHint)">
+                <span class="hint">💡 {{ hint }}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="solution-section mt-3">
+            <button class="btn btn-warning" (click)="toggleSolution()">
+              {{ showSolution ? 'Ocultar solución' : 'Ver solución' }}
+            </button>
+            <pre *ngIf="showSolution" class="solution-box mt-2">{{ selectedChallenge.solution }}</pre>
+          </div>
+        </ng-container>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Fin modal -->
+
+<router-outlet></router-outlet>

@@ -1,0 +1,152 @@
+.auth-container {
+  background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
+  min-height: 100vh;
+}
+
+.auth-card {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px 0 var(--shadow);
+  border: 1px solid var(--border-color);
+}
+
+.btn-primary {
+  background: linear-gradient(45deg, var(--button-primary), var(--button-hover));
+  border: none;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: var(--button-hover);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--button-primary);
+}
+
+.login-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--secondary-bg);
+  color: var(--text-primary);
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.auth-footer a {
+  color: var(--button-primary);
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  color: var(--button-hover);
+  text-decoration: underline;
+}
+
+:host-context(.dark-theme) .auth-container {
+  background: var(--course-card-bg);
+}
+
+:host-context(.dark-theme) .auth-card {
+  color: #fff;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+  background: var(--course-card-bg);
+  border-color: var(--border-color);
+}
+
+:host-context(.dark-theme) h2,
+:host-context(.dark-theme) label,
+:host-context(.dark-theme) .auth-footer,
+:host-context(.dark-theme) .auth-footer a {
+  color: #fff !important;
+}
+
+:host-context(.dark-theme) .form-control,
+:host-context(.dark-theme) input {
+  background: #181c2f;
+  color: #fff;
+  border: 1px solid #6c63ff;
+}
+
+:host-context(.dark-theme) .form-control::placeholder,
+:host-context(.dark-theme) input::placeholder {
+  color: #bfc7e0;
+  opacity: 1;
+}
+
+:host-context(.dark-theme) .form-control:focus,
+:host-context(.dark-theme) input:focus {
+  border-color: #8a7fff;
+  box-shadow: 0 0 0 0.2rem rgba(138, 127, 255, 0.15);
+}
+
+:host-context(.dark-theme) .btn-primary {
+  background: linear-gradient(45deg, #6c63ff, #8a7fff);
+  color: #fff;
+}
+
+:host-context(.dark-theme) .btn-primary:hover {
+  background: #8a7fff;
+}
+
+:host-context(.dark-theme) .auth-footer {
+  border-top: 1px solid #393e4f;
+}
+
+:host-context(.dark-theme) .alert-danger {
+  background: #3a223a;
+  color: #ffb3b3;
+  border-color: #ffb3b3;
+}
+

@@ -1,0 +1,93 @@
+.challenge-detail-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 2rem 2.5rem;
+}
+
+:host-context(.dark-theme) .challenge-detail-container {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+:host-context(.dark-theme) h2,
+:host-context(.dark-theme) .description {
+  color: var(--text-primary);
+}
+:host-context(.dark-theme) .hint {
+  background: #223322;
+  color: #43b581;
+}
+:host-context(.dark-theme) .solution-box {
+  background: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+:host-context(.dark-theme) .btn-info {
+  background: var(--button-primary);
+  color: #fff;
+}
+:host-context(.dark-theme) .btn-warning {
+  background: var(--warning-color);
+  color: #333;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.description {
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 1.5rem;
+}
+
+.hints-section {
+  margin-bottom: 1.5rem;
+}
+
+.hints-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.hint {
+  display: block;
+  background: #e3f7e3;
+  color: #256029;
+  border-radius: 6px;
+  padding: 0.7em 1em;
+  margin-bottom: 0.5em;
+  font-size: 1rem;
+}
+
+.solution-section {
+  margin-top: 1.5rem;
+}
+
+.solution-box {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1em;
+  font-family: 'Fira Mono', 'Consolas', monospace;
+  font-size: 1rem;
+  color: #333;
+  white-space: pre-wrap;
+}
+
+.btn-info {
+  background: #17a2b8;
+  color: #fff;
+  border: none;
+}
+
+.btn-warning {
+  background: #ffc107;
+  color: #333;
+  border: none;
+} 
