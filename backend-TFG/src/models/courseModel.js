@@ -4,11 +4,11 @@ class CourseModel {
     static async getAll(userPlan = 'Free') {
         const query = userPlan === 'Premium'
             ? 'SELECT * FROM courses ORDER BY id ASC'
-            : 'SELECT * FROM courses WHERE is_premium = FALSE ORDER BY id ASC';
+            : 'SELECT * FROM courses WHERE is_premium = 0 ORDER BY id ASC';
 
         try {
             const { rows } = await db.query(query);
-            return rows;
+            return rows.map(r => ({ ...r, is_premium: !!r.is_premium }));
         } catch (error) {
             console.error('Error en getAll courses:', error);
             throw error;
@@ -19,7 +19,7 @@ class CourseModel {
         const query = 'SELECT * FROM courses WHERE id = $1 LIMIT 1';
         try {
             const { rows } = await db.query(query, [id]);
-            const course = rows[0];
+            const course = rows[0] ? { ...rows[0], is_premium: !!rows[0].is_premium } : null;
 
             if (!course) return null;
 
@@ -38,14 +38,14 @@ class CourseModel {
         let query = 'SELECT * FROM course_sections WHERE course_id = $1';
 
         if (userPlan !== 'Premium') {
-            query += ' AND is_premium = FALSE';
+            query += ' AND is_premium = 0';
         }
 
         query += ' ORDER BY section_order ASC';
 
         try {
             const { rows } = await db.query(query, [courseId]);
-            return rows;
+            return rows.map(r => ({ ...r, is_premium: !!r.is_premium }));
         } catch (error) {
             console.error('Error en getSections:', error);
             throw error;
@@ -55,7 +55,7 @@ class CourseModel {
     static async getTotalSectionsCount(courseId, userPlan = 'Free') {
         const query = userPlan === 'Premium'
             ? 'SELECT COUNT(*) as total_sections FROM course_sections WHERE course_id = $1'
-            : 'SELECT COUNT(*) as total_sections FROM course_sections WHERE course_id = $1 AND is_premium = FALSE';
+            : 'SELECT COUNT(*) as total_sections FROM course_sections WHERE course_id = $1 AND is_premium = 0';
 
         try {
             const { rows } = await db.query(query, [courseId]);
@@ -67,13 +67,11 @@ class CourseModel {
     }
 
     static async getPremiumContent(courseId) {
-        // Nota: Asegúrate de que esta tabla existe en Supabase
         const query = 'SELECT * FROM course_premium_content WHERE course_id = $1';
         try {
             const { rows } = await db.query(query, [courseId]);
-            return rows;
+            return rows.map(r => ({ ...r, is_premium: !!r.is_premium }));
         } catch (error) {
-            // Si la tabla no existe aún, devolvemos array vacío en vez de romper
             console.warn('Tabla course_premium_content no encontrada o error:', error.message);
             return [];
         }
@@ -83,12 +81,12 @@ class CourseModel {
         let query = 'SELECT * FROM course_resources WHERE course_id = $1';
 
         if (userPlan !== 'Premium') {
-            query += ' AND is_premium = FALSE';
+            query += ' AND is_premium = 0';
         }
 
         try {
             const { rows } = await db.query(query, [courseId]);
-            return rows;
+            return rows.map(r => ({ ...r, is_premium: !!r.is_premium }));
         } catch (error) {
             console.warn('Tabla course_resources no encontrada o error:', error.message);
             return [];
