@@ -39,7 +39,8 @@ class UserController {
             console.error('Error en el registro:', error);
             res.status(500).json({
                 success: false,
-                message: 'Error al registrar el usuario'
+                message: 'Error al registrar el usuario',
+                details: error.message
             });
         }
     }
