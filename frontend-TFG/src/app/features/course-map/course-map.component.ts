@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CourseService, Course, CourseSection, CourseResource } from '../../services/course.service';
 import { Subscription } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 interface ContentBlock {
   tipo: string;
@@ -58,10 +59,10 @@ export class CourseMapComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private courseService: CourseService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
-    
+
     // Get current user info
     const currentUser = this.authService.getCurrentUser();
     this.userId = currentUser?.id?.toString() || null;
@@ -70,7 +71,7 @@ export class CourseMapComponent implements OnInit, OnDestroy {
     // Get course ID from route
     this.route.params.subscribe(params => {
       this.courseId = params['id'];
-      
+
       if (this.courseId) {
         this.loadCourseData();
       } else {
@@ -89,14 +90,14 @@ export class CourseMapComponent implements OnInit, OnDestroy {
       if (Array.isArray(contentStr)) {
         return contentStr;
       }
-      
+
       if (typeof contentStr === 'string') {
         const parsed = JSON.parse(contentStr);
         if (Array.isArray(parsed)) {
           return parsed;
         }
       }
-      
+
       return [];
     } catch (error) {
       return [];
@@ -107,7 +108,7 @@ export class CourseMapComponent implements OnInit, OnDestroy {
     const currentUser = this.authService.getCurrentUser();
     this.userId = currentUser?.id?.toString() || null;
     this.userPlan = currentUser?.plan || 'Free';
-    
+
     if (!this.userId) {
       this.apartados = [];
       this.progresoCurso = 0;
@@ -125,13 +126,13 @@ export class CourseMapComponent implements OnInit, OnDestroy {
       this.loading = false;
       return;
     }
-  
+
     this.loading = true;
     this.courseService.getCourseSections(Number(this.courseId)).subscribe({
       next: (data) => {
         this.apartados = data.map(section => {
           const parsedContent = section.content ? this.parseContent(section.content) : [];
-          
+
           return {
             id: section.id,
             nombre: section.title,
@@ -140,11 +141,11 @@ export class CourseMapComponent implements OnInit, OnDestroy {
             content: parsedContent
           };
         });
-        
+
         if (this.apartados.length > 0) {
           this.selectedIndex = 0;
         }
-        
+
         this.calcularProgresoTotal();
         this.loading = false;
       },
@@ -161,7 +162,7 @@ export class CourseMapComponent implements OnInit, OnDestroy {
       this.progresoCurso = 0;
       return;
     }
-    
+
     const completados = this.apartados.filter(apartado => apartado.completado).length;
     this.progresoCurso = Math.round((completados / this.apartados.length) * 100);
   }
@@ -191,7 +192,7 @@ export class CourseMapComponent implements OnInit, OnDestroy {
 
   selectApartado(index: number) {
     const apartado = this.apartados[index];
-    
+
     this.selectedIndex = index;
   }
 
@@ -215,13 +216,13 @@ export class CourseMapComponent implements OnInit, OnDestroy {
   }
 
   marcarComoRealizado(index: number) {
-    
+
     if (!this.authService.isAuthenticated()) {
       alert('Debes iniciar sesión para guardar tu progreso.');
       this.router.navigate(['/login']);
       return;
     }
-    
+
     if (!this.userId || !this.courseId) {
       return;
     }
@@ -232,14 +233,14 @@ export class CourseMapComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.http.post(`http://localhost:3000/api/progress/users/${this.userId}/courses/${this.courseId}/sections/${apartado.id}/complete`, {})
+    this.http.post(`${environment.apiUrl}/progress/users/${this.userId}/courses/${this.courseId}/sections/${apartado.id}/complete`, {})
       .subscribe({
         next: () => {
           apartado.completado = true;
           this.cargarProgresoGeneralDelCurso();
         },
         error: (error: HttpErrorResponse) => {
-          
+
         }
       });
   }
@@ -251,29 +252,29 @@ export class CourseMapComponent implements OnInit, OnDestroy {
       this.router.navigate(['/login']);
       return;
     }
-    
+
     if (!this.userId || !this.courseId) {
       return;
     }
     const apartado = this.apartados[index];
     if (!apartado || typeof apartado.id === 'undefined') {
-        return;
+      return;
     }
 
-    this.http.delete(`http://localhost:3000/api/progress/users/${this.userId}/courses/${this.courseId}/sections/${apartado.id}/complete`)
+    this.http.delete(`${environment.apiUrl}/progress/users/${this.userId}/courses/${this.courseId}/sections/${apartado.id}/complete`)
       .subscribe({
         next: () => {
           apartado.completado = false;
-          this.cargarProgresoGeneralDelCurso(); 
+          this.cargarProgresoGeneralDelCurso();
         },
         error: (error: HttpErrorResponse) => {
-          
+
         }
       });
   }
 
   loadCourseData() {
-    
+
     this.courseService.getCourseById(Number(this.courseId)).subscribe({
       next: (course) => {
         this.curso = course;

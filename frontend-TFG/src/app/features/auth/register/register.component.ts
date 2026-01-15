@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -24,7 +25,7 @@ export class RegisterComponent {
   constructor(
     private router: Router,
     private http: HttpClient
-  ) {}
+  ) { }
 
   onSubmit() {
     if (this.registerData.password !== this.registerData.confirmPassword) {
@@ -39,7 +40,7 @@ export class RegisterComponent {
     };
 
     this.isLoading = true;
-    this.http.post('http://localhost:3000/api/users/register', userData)
+    this.http.post(`${environment.apiUrl}/users/register`, userData)
       .subscribe({
         next: (response: any) => {
           this.isLoading = false;

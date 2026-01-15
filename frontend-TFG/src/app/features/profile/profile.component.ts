@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../auth.service';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 import { UserService } from '../../services/user.service';
 import { Subscription } from 'rxjs';
 
@@ -41,7 +42,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private router: Router,
     private userService: UserService
-  ) {}
+  ) { }
 
   ngOnInit() {
     // Suscribirse a cambios en el usuario
@@ -92,8 +93,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   private async initializeProfile(user: any) {
-    this.clearProfileData(); 
-    
+    this.clearProfileData();
+
     this.username = user.username || 'Usuario';
     this.userId = user.id?.toString() || null;
     if (user.id) {
@@ -111,8 +112,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const progress = await this.http.get<CourseProgress[]>(`http://localhost:3000/api/progress/users/${this.userId}/progress`).toPromise();
-      
+      const progress = await this.http.get<CourseProgress[]>(`${environment.apiUrl}/progress/users/${this.userId}/progress`).toPromise();
+
       if (!progress) {
         return;
       }
@@ -129,11 +130,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
       const userPlan = user?.plan || 'Free';
 
       const courseDetailsPromises = this.courseProgress.map(progress =>
-        this.http.get<any>(`http://localhost:3000/api/courses/${progress.course_id}?userPlan=${userPlan}`).toPromise()
+        this.http.get<any>(`${environment.apiUrl}/courses/${progress.course_id}?userPlan=${userPlan}`).toPromise()
       );
 
       const courseDetails = await Promise.all(courseDetailsPromises);
-      
+
       this.courseProgress = this.courseProgress.map((progress, index) => ({
         ...progress,
         course: courseDetails[index]
