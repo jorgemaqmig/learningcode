@@ -48,9 +48,9 @@ export class UserService {
   }
 
   getProfile(): Observable<UserProfile> {
-    
+
     const headers = this.getHeaders();
-    
+
     if (!localStorage.getItem('token')) {
       this.router.navigate(['/login']);
       return throwError(() => new Error('No hay token de autenticación'));
@@ -58,7 +58,7 @@ export class UserService {
 
     return this.http.get<UserProfile>(`${this.apiUrl}/profile`, { headers }).pipe(
       tap(profile => {
-        
+
         localStorage.setItem('debug_profile', JSON.stringify(profile));
       }),
       catchError(this.handleError.bind(this))
@@ -66,20 +66,20 @@ export class UserService {
   }
 
   updateProfile(formData: FormData): Observable<ApiResponse> {
-    
+
     const token = localStorage.getItem('token');
     if (!token) {
-      this.router.navigate(['/login'], { 
+      this.router.navigate(['/login'], {
         queryParams: { returnUrl: this.router.url }
       });
       return throwError(() => new Error('No hay token de autenticación'));
     }
-    
+
     const formDataKeys: string[] = [];
     formData.forEach((value, key) => {
       formDataKeys.push(key);
     });
-    
+
     const headers = this.getHeaders();
     return this.http.put<ApiResponse>(`${this.apiUrl}/profile`, formData, { headers }).pipe(
       tap(response => {
@@ -89,13 +89,18 @@ export class UserService {
   }
 
   getProfilePictureUrl(userId: number, avatar?: string): string {
-    
+
     // Si no hay avatar o es la imagen por defecto, usar la local
     if (!avatar || avatar === 'default-profile.jpg') {
       return 'assets/avatars/default-profile.jpg';
     }
 
-    // Si hay un avatar personalizado, usar la URL del backend
+    // Si el avatar ya es una cadena Base64, devolverla directamente
+    if (avatar.startsWith('data:image')) {
+      return avatar;
+    }
+
+    // Si hay un avatar personalizado (nombre de archivo antiguo), usar la URL del backend
     const url = `${this.apiUrl}/profile/picture/${userId}`;
     return url;
   }
@@ -108,7 +113,7 @@ export class UserService {
           const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
           const updatedUser = { ...storedUser, plan: response.user.plan };
           localStorage.setItem('user', JSON.stringify(updatedUser));
-          
+
           // Update auth service user data
           this.authService.setUser(updatedUser);
         }
@@ -139,11 +144,11 @@ export class UserService {
       console.error(
         `Backend returned code ${error.status}, ` +
         `body was: ${JSON.stringify(error.error)}`);
-      
+
       if (error.status === 401) {
         errorMessage = 'No estás autorizado. Por favor, inicia sesión de nuevo.';
         localStorage.removeItem('token');
-        this.router.navigate(['/login'], { 
+        this.router.navigate(['/login'], {
           queryParams: { returnUrl: this.router.url }
         });
       } else if (error.status === 403) {

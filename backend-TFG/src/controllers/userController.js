@@ -168,30 +168,10 @@ class UserController {
 
             // Manejar la imagen de perfil si se subió una
             if (req.file) {
-
                 try {
-                    const uploadDir = path.join(__dirname, '../../uploads/profileimages');
-
-                    await ensureDirectoryExists(uploadDir);
-
-                    const avatarName = `${userId}-${Date.now()}${path.extname(req.file.originalname)}`;
-                    const uploadPath = path.join(uploadDir, avatarName);
-
-                    // Mover el archivo
-                    await fs.rename(req.file.path, uploadPath);
-
-                    updateData.avatar = avatarName;
-
-                    // Eliminar la foto anterior si existe y no es la default
-                    const currentUser = await UserModel.findById(userId);
-                    if (currentUser.avatar && currentUser.avatar !== 'default-profile.jpg') {
-                        const oldPicPath = path.join(uploadDir, currentUser.avatar);
-                        try {
-                            await fs.unlink(oldPicPath);
-                        } catch (err) {
-
-                        }
-                    }
+                    // Convertir el buffer de la imagen a Base64
+                    const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+                    updateData.avatar = base64Image;
                 } catch (error) {
                     return res.status(500).json({
                         success: false,
@@ -239,25 +219,26 @@ class UserController {
         try {
             const userId = req.params.userId;
             const user = await UserModel.findById(userId);
-            const uploadDir = path.join(__dirname, '../../uploads/profileimages');
 
-            // Asegurarse de que existe el directorio de imágenes
-            await ensureDirectoryExists(uploadDir);
-
-            if (!user || !user.avatar) {
-                return res.sendFile(path.join(uploadDir, 'default-profile.jpg'));
+            if (!user || !user.avatar || user.avatar === 'default-profile.jpg' || !user.avatar.startsWith('data:image')) {
+                // Para simplificar, si no hay base64, devolvemos un 404 o una imagen por defecto local
+                // Pero como estamos en Vercel, no podemos confiar en archivos locales.
+                // En el frontend manejaremos el caso de default-profile.jpg
+                return res.status(404).send('No profile picture found');
             }
 
-            const imagePath = path.join(uploadDir, user.avatar);
-
-            // Verificar si el archivo existe
-            try {
-                await fs.access(imagePath);
-                res.sendFile(imagePath);
-            } catch (error) {
-                // Si el archivo no existe, enviar la imagen por defecto
-                res.sendFile(path.join(uploadDir, 'default-profile.jpg'));
+            // Extraer el tipo mime y la data base64
+            const matches = user.avatar.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+);base64,(.+)$/);
+            if (!matches || matches.length !== 3) {
+                return res.status(400).send('Invalid avatar data');
             }
+
+            const contentType = matches[1];
+            const base64Data = matches[2];
+            const buffer = Buffer.from(base64Data, 'base64');
+
+            res.set('Content-Type', contentType);
+            res.send(buffer);
         } catch (error) {
             console.error('Error al obtener la imagen de perfil:', error);
             res.status(500).json({

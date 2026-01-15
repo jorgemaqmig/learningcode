@@ -8,33 +8,8 @@ const db = require('../config/database');
 
 const router = express.Router();
 
-// Asegurarse de que existe el directorio de uploads
-const ensureUploadDir = async () => {
-    const uploadDir = path.join(__dirname, '../../uploads/profileimages');
-    try {
-        await fs.access(uploadDir);
-    } catch (error) {
-        await fs.mkdir(uploadDir, { recursive: true });
-    }
-    return uploadDir;
-};
-
-// Configuración de multer para subida de archivos
-const storage = multer.diskStorage({
-    destination: async function (req, file, cb) {
-        try {
-            const uploadDir = await ensureUploadDir();
-            cb(null, uploadDir);
-        } catch (error) {
-            cb(error);
-        }
-    },
-    filename: function (req, file, cb) {
-        // Generar un nombre temporal único para el archivo
-        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-        cb(null, `temp-${uniqueSuffix}${path.extname(file.originalname)}`);
-    }
-});
+// Configuración de multer para subida de archivos en memoria (compatible con Vercel)
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
     if (!file.mimetype.match(/^image\/(jpeg|jpg|png)$/)) {
