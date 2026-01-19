@@ -165,6 +165,19 @@
                 <img [src]="bloque.url" [alt]="bloque.descripcion || 'Imagen del curso'" loading="lazy">
                 <p *ngIf="bloque.descripcion" class="image-caption">{{bloque.descripcion}}</p>
               </div>
+
+              <!-- Exercise Block (New) -->
+              <div *ngIf="bloque.tipo === 'ejercicio'" class="block-exercise">
+                <div class="exercise-header">
+                  <i class="bi bi-code-square"></i>
+                  <span>Ejercicio Práctico</span>
+                </div>
+                <p class="exercise-desc" *ngIf="bloque.descripcion">{{bloque.descripcion}}</p>
+                <app-code-editor [initialCode]="bloque.contenido" [language]="bloque.lenguaje || 'python'"
+                  [isDarkTheme]="true" [testCode]="bloque.test_code || ''"
+                  (solvedCorrectly)="marcarComoRealizado(selectedIndex)">
+                </app-code-editor>
+              </div>
             </div>
           </div>
 

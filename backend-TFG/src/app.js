@@ -22,6 +22,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/challenges', challengeRoutes);
+app.use('/api', require('./routes/executionRoutes'));
 
 // Ruta de prueba
 app.get('/test', (req, res) => {

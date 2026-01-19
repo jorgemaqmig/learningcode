@@ -13,6 +13,7 @@ interface ContentBlock {
   lenguaje?: string;
   url?: string;
   descripcion?: string;
+  test_code?: string;
 }
 
 interface Section {
@@ -30,10 +31,12 @@ interface CourseProgress {
   completed_sections: number[];
 }
 
+import { CodeEditorComponent } from '../../shared/components/code-editor/code-editor.component';
+
 @Component({
   selector: 'app-course-map',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, CodeEditorComponent],
   templateUrl: './course-map.component.html',
   styleUrls: ['./course-map.component.css']
 })
