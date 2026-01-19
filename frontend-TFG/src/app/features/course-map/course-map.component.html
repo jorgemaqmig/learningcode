@@ -167,7 +167,7 @@
               </div>
 
               <!-- Exercise Block (New) -->
-              <div *ngIf="bloque.tipo === 'ejercicio'" class="block-exercise">
+              <div *ngIf="bloque.tipo?.toLowerCase()?.trim() === 'ejercicio'" class="block-exercise">
                 <div class="exercise-header">
                   <i class="bi bi-code-square"></i>
                   <span>Ejercicio Práctico</span>
