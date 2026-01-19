@@ -32,13 +32,13 @@ export class ChallengesComponent implements OnInit {
     public challengeService: ChallengeService,
     public authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadChallenges();
   }
 
-  private loadChallenges() {
+  loadChallenges() {
     this.loading = true;
     this.error = null;
 
