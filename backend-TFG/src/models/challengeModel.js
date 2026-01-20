@@ -3,7 +3,7 @@ const db = require('../config/database');
 exports.getAll = async (userPlan = 'Free') => {
     const query = userPlan === 'Premium'
         ? 'SELECT * FROM challenges ORDER BY id ASC'
-        : 'SELECT * FROM challenges WHERE is_premium = 0 ORDER BY id ASC';
+        : 'SELECT * FROM challenges WHERE is_premium::integer = 0 ORDER BY id ASC';
 
     try {
         const { rows } = await db.query(query);
@@ -39,7 +39,7 @@ exports.getByCourse = async (courseId, userPlan = 'Free') => {
     let query = 'SELECT * FROM challenges WHERE course_id = $1';
 
     if (userPlan !== 'Premium') {
-        query += ' AND is_premium = 0';
+        query += ' AND is_premium::integer = 0';
     }
 
     query += ' ORDER BY created_at ASC';
@@ -57,7 +57,7 @@ exports.getBySection = async (sectionId, userPlan = 'Free') => {
     let query = 'SELECT * FROM challenges WHERE section_id = $1';
 
     if (userPlan !== 'Premium') {
-        query += ' AND is_premium = 0';
+        query += ' AND is_premium::integer = 0';
     }
 
     try {

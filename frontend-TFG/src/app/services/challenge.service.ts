@@ -15,6 +15,9 @@ export interface Challenge {
   created_at: string;
   hints?: string;
   solution?: string;
+  language?: string;
+  initial_code?: string;
+  test_code?: string;
 }
 
 @Injectable({
@@ -26,7 +29,7 @@ export class ChallengeService {
   constructor(
     private http: HttpClient,
     private authService: AuthService
-  ) {}
+  ) { }
 
   getChallenges(): Observable<Challenge[]> {
     const userPlan = this.authService.getCurrentUser()?.plan || 'Free';

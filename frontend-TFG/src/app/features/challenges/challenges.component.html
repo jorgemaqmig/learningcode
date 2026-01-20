@@ -135,10 +135,13 @@
 <!-- Modal de detalle de reto -->
 <div class="modal fade show d-block" tabindex="-1" *ngIf="showModal"
   style="background:rgba(0,0,0,0.6); backdrop-filter: blur(5px);">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content glass-card">
       <div class="modal-header">
-        <h5 class="modal-title">Detalle del Reto</h5>
+        <h5 class="modal-title">
+          <i class="bi bi-puzzle-fill me-2"></i>
+          Reto Interactivo
+        </h5>
         <button type="button" class="btn-close" aria-label="Cerrar" (click)="closeModal()"></button>
       </div>
       <div class="modal-body">
@@ -157,25 +160,59 @@
           </div>
         </ng-container>
         <ng-container *ngIf="!modalLoading && !modalError && selectedChallenge">
-          <h2>{{ selectedChallenge.title }}</h2>
-          <p class="description">{{ selectedChallenge.description }}</p>
-          <div class="hints-section"
-            *ngIf="selectedChallenge.hints && (parseHints(selectedChallenge.hints).length > 0)">
-            <button class="btn-secondary-premium mb-2" (click)="showNextHint()"
-              [disabled]="currentHint >= parseHints(selectedChallenge.hints).length">
-              Ver pista
-            </button>
-            <ul class="hints-list">
-              <li *ngFor="let hint of parseHints(selectedChallenge.hints).slice(0, currentHint)">
-                <span class="hint">💡 {{ hint }}</span>
-              </li>
-            </ul>
+          <div class="challenge-header-content">
+            <h2 class="challenge-title-modal">{{ selectedChallenge.title }}</h2>
+            <div class="challenge-badges-modal">
+              <span class="badge" [ngClass]="getDifficultyClass(selectedChallenge.difficulty_level)">
+                {{ selectedChallenge.difficulty_level }}
+              </span>
+              <span class="badge bg-secondary">{{ selectedChallenge.language | titlecase }}</span>
+            </div>
           </div>
-          <div class="solution-section mt-3">
-            <button class="btn-primary-premium" (click)="toggleSolution()">
-              {{ showSolution ? 'Ocultar solución' : 'Ver solución' }}
+
+          <p class="challenge-description-modal">{{ selectedChallenge.description }}</p>
+
+          <!-- Hints Section -->
+          <div class="hints-section-modal"
+            *ngIf="selectedChallenge.hints && (parseHints(selectedChallenge.hints).length > 0)">
+            <button class="btn-hint" (click)="showNextHint()"
+              [disabled]="currentHint >= parseHints(selectedChallenge.hints).length">
+              <i class="bi bi-lightbulb"></i>
+              <span>Ver pista ({{currentHint}}/{{parseHints(selectedChallenge.hints).length}})</span>
             </button>
-            <pre *ngIf="showSolution" class="solution-box mt-2">{{ selectedChallenge.solution }}</pre>
+            <div class="hints-container" *ngIf="currentHint > 0">
+              <div *ngFor="let hint of parseHints(selectedChallenge.hints).slice(0, currentHint)" class="hint-item">
+                <i class="bi bi-info-circle"></i>
+                <span>{{ hint }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Code Editor Section -->
+          <div class="editor-section-modal">
+            <div class="section-label">
+              <i class="bi bi-code-slash"></i> Tusolución
+            </div>
+            <app-code-editor [initialCode]="selectedChallenge.initial_code || ''"
+              [language]="selectedChallenge.language || 'javascript'" [isDarkTheme]="true"
+              [testCode]="selectedChallenge.test_code || ''">
+            </app-code-editor>
+          </div>
+
+          <!-- Solution Section -->
+          <div class="solution-section-modal mt-4">
+            <button class="btn-solution" [class.active]="showSolution" (click)="toggleSolution()">
+              <i class="bi" [ngClass]="showSolution ? 'bi-eye-slash' : 'bi-eye'"></i>
+              <span>{{ showSolution ? 'Ocultar solución' : 'Ver solución' }}</span>
+            </button>
+
+            <div class="solution-wrapper shadow-lg" *ngIf="showSolution">
+              <div class="solution-header">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>Solución Recomendada</span>
+              </div>
+              <pre class="solution-code"><code>{{ selectedChallenge.solution }}</code></pre>
+            </div>
           </div>
         </ng-container>
       </div>

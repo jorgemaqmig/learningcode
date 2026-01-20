@@ -4,7 +4,7 @@ class CourseModel {
     static async getAll(userPlan = 'Free') {
         const query = userPlan === 'Premium'
             ? 'SELECT * FROM courses ORDER BY id ASC'
-            : 'SELECT * FROM courses WHERE is_premium = 0 ORDER BY id ASC';
+            : 'SELECT * FROM courses WHERE is_premium::integer = 0 ORDER BY id ASC';
 
         try {
             const { rows } = await db.query(query);
@@ -38,7 +38,7 @@ class CourseModel {
         let query = 'SELECT * FROM course_sections WHERE course_id = $1';
 
         if (userPlan !== 'Premium') {
-            query += ' AND is_premium = 0';
+            query += ' AND is_premium::integer = 0';
         }
 
         query += ' ORDER BY section_order ASC';
@@ -55,7 +55,7 @@ class CourseModel {
     static async getTotalSectionsCount(courseId, userPlan = 'Free') {
         const query = userPlan === 'Premium'
             ? 'SELECT COUNT(*) as total_sections FROM course_sections WHERE course_id = $1'
-            : 'SELECT COUNT(*) as total_sections FROM course_sections WHERE course_id = $1 AND is_premium = 0';
+            : 'SELECT COUNT(*) as total_sections FROM course_sections WHERE course_id = $1 AND is_premium::integer = 0';
 
         try {
             const { rows } = await db.query(query, [courseId]);
@@ -81,7 +81,7 @@ class CourseModel {
         let query = 'SELECT * FROM course_resources WHERE course_id = $1';
 
         if (userPlan !== 'Premium') {
-            query += ' AND is_premium = 0';
+            query += ' AND is_premium::integer = 0';
         }
 
         try {

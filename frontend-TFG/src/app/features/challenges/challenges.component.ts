@@ -7,10 +7,12 @@ import { ChallengeDetailComponent } from './challenge-detail/challenge-detail.co
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 
+import { CodeEditorComponent } from '../../shared/components/code-editor/code-editor.component';
+
 @Component({
   selector: 'app-challenges',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, FormsModule],
+  imports: [CommonModule, RouterOutlet, FormsModule, CodeEditorComponent],
   templateUrl: './challenges.component.html',
   styleUrls: ['./challenges.component.css']
 })
