@@ -27,7 +27,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private userService: UserService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.userSubscription = this.authService.user$.subscribe(user => {
@@ -54,5 +54,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  closeNavbar() {
+    const navbarCollapse = document.getElementById('navbarNav');
+    if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+      const toggler = document.querySelector('.navbar-toggler') as HTMLElement;
+      if (toggler) {
+        toggler.click();
+      }
+    }
   }
 }
