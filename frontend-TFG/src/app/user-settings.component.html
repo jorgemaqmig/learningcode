@@ -1,205 +1,184 @@
-<div class="settings-container">
-    <h2>Configuración del Perfil</h2>
-
-    <!-- Loading indicator -->
-    <div *ngIf="isLoading" class="loading-spinner">
-        <div class="spinner"></div>
-        <p>Cargando...</p>
+<div class="settings-page">
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
     </div>
 
-    <!-- Messages -->
-    <div *ngIf="successMessage" class="alert alert-success">
-        {{ successMessage }}
-    </div>
+    <div class="settings-container">
+        <h2 class="page-title"><span class="gradient-text">Configuración</span> de Perfil</h2>
 
-    <div *ngIf="errorMessage" class="alert alert-danger">
-        {{ errorMessage }}
-    </div>
-
-    <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
-        <!-- Profile Picture Section -->
-        <div class="profile-picture-section">
-            <div class="profile-picture">
-                <img [src]="previewImage || 'assets/avatars/default-profile.jpg'" 
-                     alt="Foto de perfil"
-                     class="profile-image">
-                <div class="upload-overlay">
-                    <label for="profilePicture" class="upload-button">
-                        <i class="bi bi-camera"></i>
-                        Cambiar foto
-                    </label>
-                    <input 
-                        type="file" 
-                        id="profilePicture" 
-                        (change)="onFileSelected($event)"
-                        accept="image/png,image/jpeg,image/jpg"
-                        style="display: none;">
-                </div>
+        <!-- Loading indicator -->
+        <div *ngIf="isLoading" class="glass-card p-4 text-center mb-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
             </div>
+            <p class="mt-2 mb-0">Procesando cambios...</p>
         </div>
 
-        <!-- Username Section -->
-        <div class="form-group">
-            <label for="username">Nombre de usuario</label>
-            <input 
-                type="text" 
-                id="username"
-                formControlName="username"
-                class="form-control"
-                [class.is-invalid]="settingsForm.get('username')?.invalid && settingsForm.get('username')?.touched">
-            <div class="invalid-feedback" *ngIf="settingsForm.get('username')?.errors?.['required'] && settingsForm.get('username')?.touched">
-                El nombre de usuario es obligatorio
-            </div>
-            <div class="invalid-feedback" *ngIf="settingsForm.get('username')?.errors?.['minlength'] && settingsForm.get('username')?.touched">
-                El nombre de usuario debe tener al menos 3 caracteres
-            </div>
+        <!-- Messages -->
+        <div *ngIf="successMessage" class="alert alert-success glass-card" role="alert">
+            <i class="bi bi-check-circle-fill"></i>
+            {{ successMessage }}
         </div>
 
-        <!-- Email Section -->
-        <div class="form-group">
-            <label for="email">Correo electrónico</label>
-            <input 
-                type="email" 
-                id="email"
-                formControlName="email"
-                class="form-control"
-                [class.is-invalid]="settingsForm.get('email')?.invalid && settingsForm.get('email')?.touched">
-            <div class="invalid-feedback" *ngIf="settingsForm.get('email')?.errors?.['required'] && settingsForm.get('email')?.touched">
-                El correo electrónico es obligatorio
-            </div>
-            <div class="invalid-feedback" *ngIf="settingsForm.get('email')?.errors?.['email'] && settingsForm.get('email')?.touched">
-                Introduce un correo electrónico válido
-            </div>
+        <div *ngIf="errorMessage" class="alert alert-danger glass-card" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            {{ errorMessage }}
         </div>
 
-        <!-- Password Change Section -->
-        <div class="password-section">
-            <h3>Cambiar contraseña</h3>
-            
-            <div class="form-group">
-                <label for="currentPassword">Contraseña actual</label>
-                <div class="password-input-group">
-                    <input 
-                        [type]="showPassword ? 'text' : 'password'"
-                        id="currentPassword"
-                        formControlName="currentPassword"
-                        class="form-control"
-                        [class.is-invalid]="(settingsForm.get('currentPassword')?.invalid && settingsForm.get('currentPassword')?.touched) || 
-                                          (settingsForm.errors?.['currentPasswordRequired'] && settingsForm.get('currentPassword')?.touched)">
-                    <button type="button" class="password-toggle" (click)="togglePasswordVisibility()">
-                        <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
-                    </button>
-                </div>
-                <div class="invalid-feedback" *ngIf="settingsForm.get('currentPassword')?.errors?.['required'] && settingsForm.get('currentPassword')?.touched">
-                    La contraseña actual es obligatoria para realizar cambios
-                </div>
-                <div class="invalid-feedback" *ngIf="settingsForm.errors?.['currentPasswordRequired'] && settingsForm.get('currentPassword')?.touched">
-                    Debes ingresar tu contraseña actual para cambiarla
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="newPassword">Nueva contraseña</label>
-                <input 
-                    [type]="showPassword ? 'text' : 'password'"
-                    id="newPassword"
-                    formControlName="newPassword"
-                    class="form-control"
-                    [class.is-invalid]="(settingsForm.get('newPassword')?.invalid && settingsForm.get('newPassword')?.touched) ||
-                                      (settingsForm.errors?.['passwordLength'] && settingsForm.get('newPassword')?.touched)">
-                <div class="invalid-feedback" *ngIf="settingsForm.get('newPassword')?.errors?.['required'] && settingsForm.get('newPassword')?.touched">
-                    La nueva contraseña es obligatoria
-                </div>
-                <div class="invalid-feedback" *ngIf="(settingsForm.get('newPassword')?.errors?.['minlength'] || settingsForm.errors?.['passwordLength']) && settingsForm.get('newPassword')?.touched">
-                    La contraseña debe tener al menos 6 caracteres
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="confirmPassword">Confirmar nueva contraseña</label>
-                <input 
-                    [type]="showPassword ? 'text' : 'password'"
-                    id="confirmPassword"
-                    formControlName="confirmPassword"
-                    class="form-control"
-                    [class.is-invalid]="(settingsForm.get('confirmPassword')?.invalid && settingsForm.get('confirmPassword')?.touched) ||
-                                      (settingsForm.errors?.['passwordMismatch'] && settingsForm.get('confirmPassword')?.touched)">
-                <div class="invalid-feedback" *ngIf="settingsForm.get('confirmPassword')?.errors?.['required'] && settingsForm.get('confirmPassword')?.touched">
-                    Debes confirmar la nueva contraseña
-                </div>
-                <div class="invalid-feedback" *ngIf="settingsForm.errors?.['passwordMismatch'] && settingsForm.get('confirmPassword')?.touched">
-                    Las contraseñas no coinciden
-                </div>
-            </div>
-        </div>
-
-        <!-- Plan Selection Section -->
-        <div class="plan-section">
-            <h3>Plan de Suscripción</h3>
-            <div class="plans-container">
-                <!-- Free Plan -->
-                <div class="plan-card" [class.active]="currentPlan === 'Free'">
-                    <div class="plan-header">
-                        <h4>Plan Free</h4>
-                        <span class="price">€0/mes</span>
+        <div class="glass-card p-4 p-md-5">
+            <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
+                <!-- Profile Picture Section -->
+                <div class="profile-picture-section">
+                    <div class="profile-picture-wrapper">
+                        <img [src]="previewImage || 'assets/avatars/default-profile.jpg'" alt="Foto de perfil"
+                            class="profile-image">
+                        <label for="profilePicture" class="upload-btn-floating" title="Cambiar foto">
+                            <i class="bi bi-camera-fill"></i>
+                        </label>
+                        <input type="file" id="profilePicture" (change)="onFileSelected($event)"
+                            accept="image/png,image/jpeg,image/jpg" style="display: none;">
                     </div>
-                    <ul class="plan-features">
-                        <li *ngFor="let feature of planFeatures.Free">
-                            <i class="bi bi-check-circle"></i>
-                            {{ feature }}
-                        </li>
-                    </ul>
-                    <button 
-                        class="btn btn-outline-primary" 
-                        [class.active]="currentPlan === 'Free'"
-                        (click)="onPlanChange('Free')"
-                        [disabled]="currentPlan === 'Free' || isLoading">
-                        {{ currentPlan === 'Free' ? 'Plan Actual' : 'Seleccionar Plan' }}
-                    </button>
                 </div>
 
-                <!-- Premium Plan -->
-                <div class="plan-card" [class.active]="currentPlan === 'Premium'">
-                    <div class="plan-header">
-                        <h4>Plan Premium</h4>
-                        <span class="price">€9.99/mes</span>
+                <div class="row">
+                    <!-- Username Section -->
+                    <div class="col-md-6 form-group">
+                        <label class="label-with-icon" for="username">
+                            <i class="bi bi-person"></i> Nombre de usuario
+                        </label>
+                        <input type="text" id="username" formControlName="username" class="form-control"
+                            placeholder="Tu nombre de usuario"
+                            [class.is-invalid]="settingsForm.get('username')?.invalid && settingsForm.get('username')?.touched">
+                        <div class="invalid-feedback" *ngIf="settingsForm.get('username')?.errors?.['required']">
+                            El nombre de usuario es obligatorio
+                        </div>
                     </div>
-                    <ul class="plan-features">
-                        <li *ngFor="let feature of planFeatures.Premium">
-                            <i class="bi bi-check-circle-fill"></i>
-                            {{ feature }}
-                        </li>
-                    </ul>
-                    <button 
-                        class="btn btn-primary" 
-                        [class.active]="currentPlan === 'Premium'"
-                        (click)="onPlanChange('Premium')"
-                        [disabled]="currentPlan === 'Premium' || isLoading">
-                        {{ currentPlan === 'Premium' ? 'Plan Actual' : 'Actualizar a Premium' }}
+
+                    <!-- Email Section -->
+                    <div class="col-md-6 form-group">
+                        <label class="label-with-icon" for="email">
+                            <i class="bi bi-envelope"></i> Correo electrónico
+                        </label>
+                        <input type="email" id="email" formControlName="email" class="form-control"
+                            placeholder="tu@email.com"
+                            [class.is-invalid]="settingsForm.get('email')?.invalid && settingsForm.get('email')?.touched">
+                        <div class="invalid-feedback" *ngIf="settingsForm.get('email')?.errors?.['required']">
+                            El correo electrónico es obligatorio
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password Change Section -->
+                <h3 class="section-title"><i class="bi bi-shield-lock"></i> Seguridad</h3>
+
+                <div class="form-group">
+                    <label class="label-with-icon" for="currentPassword">Contraseña actual</label>
+                    <div class="password-input-wrapper">
+                        <input [type]="showPassword ? 'text' : 'password'" id="currentPassword"
+                            formControlName="currentPassword" class="form-control"
+                            placeholder="Ingresa tu contraseña actual para confirmar cambios"
+                            [class.is-invalid]="(settingsForm.get('currentPassword')?.invalid && settingsForm.get('currentPassword')?.touched) || 
+                                              (settingsForm.errors?.['currentPasswordRequired'] && settingsForm.get('currentPassword')?.touched)">
+                        <button type="button" class="password-toggle-btn" (click)="togglePasswordVisibility()">
+                            <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+                        </button>
+                    </div>
+                    <div class="invalid-feedback" *ngIf="settingsForm.get('currentPassword')?.errors?.['required']">
+                        La contraseña actual es obligatoria para confirmar cambios
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label class="label-with-icon" for="newPassword">Nueva contraseña</label>
+                        <input [type]="showPassword ? 'text' : 'password'" id="newPassword"
+                            formControlName="newPassword" class="form-control" placeholder="Mínimo 6 caracteres"
+                            [class.is-invalid]="(settingsForm.get('newPassword')?.invalid && settingsForm.get('newPassword')?.touched) ||
+                                              (settingsForm.errors?.['passwordLength'] && settingsForm.get('newPassword')?.touched)">
+                        <div class="invalid-feedback"
+                            *ngIf="settingsForm.get('newPassword')?.errors?.['minlength'] || settingsForm.errors?.['passwordLength']">
+                            Mínimo 6 caracteres
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label class="label-with-icon" for="confirmPassword">Confirmar contraseña</label>
+                        <input [type]="showPassword ? 'text' : 'password'" id="confirmPassword"
+                            formControlName="confirmPassword" class="form-control"
+                            placeholder="Repite la nueva contraseña"
+                            [class.is-invalid]="(settingsForm.get('confirmPassword')?.invalid && settingsForm.get('confirmPassword')?.touched) ||
+                                              (settingsForm.errors?.['passwordMismatch'] && settingsForm.get('confirmPassword')?.touched)">
+                        <div class="invalid-feedback" *ngIf="settingsForm.errors?.['passwordMismatch']">
+                            Las contraseñas no coinciden
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan Selection Section -->
+                <h3 class="section-title"><i class="bi bi-star"></i> Plan de Suscripción</h3>
+
+                <div class="plans-grid">
+                    <!-- Free Plan -->
+                    <div class="glass-card premium-plan-card" [class.active-plan]="currentPlan === 'Free'">
+                        <div class="plan-header">
+                            <h4 class="plan-name">Plan Free</h4>
+                            <div class="plan-price">€0<small>/mes</small></div>
+                        </div>
+                        <ul class="features-list">
+                            <li *ngFor="let feature of planFeatures.Free">
+                                <i class="bi bi-check-circle-fill"></i>
+                                {{ feature }}
+                            </li>
+                        </ul>
+                        <button type="button" class="btn-premium btn-premium-outline w-100"
+                            [disabled]="currentPlan === 'Free' || isLoading" (click)="onPlanChange('Free')">
+                            <i class="bi" [class.bi-check-lg]="currentPlan === 'Free'"></i>
+                            {{ currentPlan === 'Free' ? 'Plan Actual' : 'Seleccionar Plan' }}
+                        </button>
+                    </div>
+
+                    <!-- Premium Plan -->
+                    <div class="glass-card premium-plan-card premium-tier"
+                        [class.active-plan]="currentPlan === 'Premium'">
+                        <div class="plan-header">
+                            <h4 class="plan-name">Plan Premium</h4>
+                            <div class="plan-price">€9.99<small>/mes</small></div>
+                        </div>
+                        <ul class="features-list">
+                            <li *ngFor="let feature of planFeatures.Premium">
+                                <i class="bi bi-check-circle-fill"></i>
+                                {{ feature }}
+                            </li>
+                        </ul>
+                        <button type="button" class="btn-premium btn-premium-gold w-100"
+                            [disabled]="currentPlan === 'Premium' || isLoading" (click)="onPlanChange('Premium')">
+                            <i class="bi" [class.bi-stars]="currentPlan !== 'Premium'"
+                                [class.bi-check-lg]="currentPlan === 'Premium'"></i>
+                            {{ currentPlan === 'Premium' ? 'Plan Actual' : 'Actualizar a Premium' }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-actions">
+                    <button type="submit" class="btn-premium btn-premium-primary btn-save-changes"
+                        [disabled]="settingsForm.invalid || isLoading">
+                        <i class="bi bi-cloud-arrow-up-fill"></i>
+                        {{ isLoading ? 'Guardando...' : 'Guardar cambios' }}
                     </button>
                 </div>
+            </form>
+
+            <div class="text-center">
+                <button class="delete-account-btn" (click)="onDeleteAccount()">
+                    <i class="bi bi-trash3"></i> Eliminar cuenta
+                </button>
             </div>
         </div>
-
-        <!-- Submit Button -->
-        <div class="form-actions">
-            <button 
-                type="submit" 
-                class="btn btn-primary"
-                [disabled]="settingsForm.invalid || isLoading">
-                {{ isLoading ? 'Guardando...' : 'Guardar cambios' }}
-            </button>
-        </div>
-    </form>
-    <div class="delete-account-section mt-4 text-center">
-        <button class="btn btn-danger" (click)="onDeleteAccount()">
-            <i class="bi bi-trash"></i> Eliminar cuenta
-        </button>
     </div>
 </div>
 
-<app-payment-modal 
-    *ngIf="showPaymentModal" 
-    (close)="onPaymentModalClose()" 
-    (paymentComplete)="onPaymentComplete()">
-</app-payment-modal> 
+<app-payment-modal *ngIf="showPaymentModal" (close)="onPaymentModalClose()" (paymentComplete)="onPaymentComplete()">
+</app-payment-modal>

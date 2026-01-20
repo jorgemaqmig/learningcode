@@ -8,35 +8,40 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="modal-overlay" (click)="onClose()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-content glass-card" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3>Actualizar a Premium</h3>
-          <button class="close-button" (click)="onClose()">×</button>
+          <h3 class="modal-title">Actualizar a <span class="premium-text">Premium</span></h3>
+          <button class="close-btn" (click)="onClose()">
+            <i class="bi bi-x-lg"></i>
+          </button>
         </div>
         
         <div class="modal-body">
-          <div class="payment-summary mb-4">
-            <h4>Resumen de la compra</h4>
-            <div class="price-info">
-              <span class="price">9.99€</span>
+          <div class="payment-summary glass-card p-4 mb-4">
+            <h4 class="summary-title">Resumen de la suscripción</h4>
+            <div class="price-display">
+              <span class="currency">€</span>
+              <span class="amount">9.99</span>
               <span class="period">/mes</span>
             </div>
             <ul class="benefits-list">
-              <li><i class="bi bi-check-circle-fill"></i> Acceso a todos los cursos premium</li>
-              <li><i class="bi bi-check-circle-fill"></i> Contenido exclusivo</li>
-              <li><i class="bi bi-check-circle-fill"></i> Soporte prioritario</li>
-              <li><i class="bi bi-check-circle-fill"></i> Sin anuncios</li>
+              <li><i class="bi bi-check-circle-fill"></i> Acceso ilimitado a todos los cursos</li>
+              <li><i class="bi bi-check-circle-fill"></i> Contenido exclusivo y avanzado</li>
+              <li><i class="bi bi-check-circle-fill"></i> Soporte prioritario 24/7</li>
+              <li><i class="bi bi-check-circle-fill"></i> Experiencia sin anuncios</li>
             </ul>
           </div>
 
           <form (submit)="onSubmit($event)" class="payment-form">
-            <div class="form-group">
-              <label for="cardNumber">Número de tarjeta</label>
+            <div class="form-group mb-3">
+              <label class="label-with-icon" for="cardNumber">
+                <i class="bi bi-credit-card"></i> Número de tarjeta
+              </label>
               <input 
                 type="text" 
                 id="cardNumber" 
                 class="form-control" 
-                placeholder="1234 5678 9012 3456"
+                placeholder="0000 0000 0000 0000"
                 [(ngModel)]="cardNumber"
                 name="cardNumber"
                 required
@@ -46,8 +51,10 @@ import { FormsModule } from '@angular/forms';
 
             <div class="row">
               <div class="col-6">
-                <div class="form-group">
-                  <label for="expiryDate">Fecha de expiración</label>
+                <div class="form-group mb-3">
+                  <label class="label-with-icon" for="expiryDate">
+                    <i class="bi bi-calendar-event"></i> Expiración
+                  </label>
                   <input 
                     type="text" 
                     id="expiryDate" 
@@ -61,8 +68,10 @@ import { FormsModule } from '@angular/forms';
                 </div>
               </div>
               <div class="col-6">
-                <div class="form-group">
-                  <label for="cvv">CVV</label>
+                <div class="form-group mb-3">
+                  <label class="label-with-icon" for="cvv">
+                    <i class="bi bi-lock"></i> CVV
+                  </label>
                   <input 
                     type="text" 
                     id="cvv" 
@@ -77,12 +86,16 @@ import { FormsModule } from '@angular/forms';
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 mt-4" [disabled]="isProcessing">
-              <span *ngIf="!isProcessing">Confirmar pago</span>
+            <button type="submit" class="btn-premium-gold w-100 mt-4" [disabled]="isProcessing">
+              <span *ngIf="!isProcessing"><i class="bi bi-shield-check me-2"></i>Confirmar pago</span>
               <span *ngIf="isProcessing">
-                <i class="bi bi-arrow-repeat spinning"></i> Procesando...
+                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                Procesando...
               </span>
             </button>
+            <p class="text-center mt-3 text-muted small">
+              <i class="bi bi-lock-fill me-1"></i> Pago seguro cifrado SSL
+            </p>
           </form>
         </div>
       </div>
@@ -91,169 +104,223 @@ import { FormsModule } from '@angular/forms';
   styles: [`
     .modal-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.5);
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 2000;
+      padding: 1rem;
+      animation: fadeIn 0.3s ease-out;
     }
 
     .modal-content {
-      background: white;
-      border-radius: 8px;
-      width: 90%;
+      width: 100%;
       max-width: 500px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 0;
+      overflow: hidden;
+      animation: slideUp 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
 
-    :host-context(.dark-theme) .modal-content {
-      background: var(--card-bg);
-      color: var(--text-primary);
-      border: 1px solid var(--border-color);
+    .glass-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        border-radius: 28px;
     }
-    :host-context(.dark-theme) .modal-header {
-      border-bottom: 1px solid var(--border-color);
+
+    :host-context(.dark-theme) .glass-card {
+        background: rgba(45, 48, 54, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
     }
-    :host-context(.dark-theme) .modal-header h3,
-    :host-context(.dark-theme) label {
-      color: var(--text-primary);
-    }
-    :host-context(.dark-theme) .close-button {
-      color: var(--text-secondary);
-    }
-    :host-context(.dark-theme) .modal-body {
-      background: var(--card-bg);
-    }
-    :host-context(.dark-theme) .payment-summary {
-      background: var(--secondary-bg);
-      color: var(--text-primary);
-    }
-    :host-context(.dark-theme) .form-control {
-      background: var(--secondary-bg);
-      color: var(--text-primary);
-      border: 1px solid var(--border-color);
-    }
-    :host-context(.dark-theme) .form-control:focus {
-      border-color: var(--button-primary);
-      box-shadow: 0 0 0 0.2rem rgba(114, 137, 218, 0.15);
-    }
-    :host-context(.dark-theme) .benefits-list li {
-      color: var(--text-secondary);
-    }
-    :host-context(.dark-theme) .price {
-      color: var(--button-primary);
-    }
-    :host-context(.dark-theme) .form-control::placeholder {
-      color: #fff;
-      opacity: 1;
-    }
-    
 
     .modal-header {
-      padding: 1.5rem;
-      border-bottom: 1px solid #eee;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .modal-header h3 {
-      margin: 0;
-      color: #333;
+    :host-context(.dark-theme) .modal-header {
+      border-bottom-color: rgba(255, 255, 255, 0.05);
     }
 
-    .close-button {
-      background: none;
-      border: none;
+    .modal-title {
+      margin: 0;
       font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .premium-text {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .close-btn {
+      background: rgba(0, 0, 0, 0.05);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      color: #666;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      transform: rotate(90deg);
     }
 
     .modal-body {
-      padding: 1.5rem;
+      padding: 2rem;
     }
 
     .payment-summary {
+      background: rgba(99, 102, 241, 0.03);
+      border-color: rgba(99, 102, 241, 0.1);
+    }
+
+    :host-context(.dark-theme) .payment-summary {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .summary-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .price-display {
       text-align: center;
-      padding: 1rem;
-      background: #f8f9fa;
-      border-radius: 8px;
+      margin-bottom: 1.5rem;
     }
 
-    .price-info {
-      margin: 1rem 0;
+    .currency {
+      font-size: 1.5rem;
+      font-weight: 700;
+      vertical-align: top;
+      margin-right: 2px;
+      color: var(--text-primary);
     }
 
-    .price {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #007bff;
+    .amount {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--text-primary);
+      letter-spacing: -2px;
     }
 
     .period {
-      color: #666;
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      font-weight: 600;
     }
 
     .benefits-list {
       list-style: none;
       padding: 0;
-      margin: 1rem 0;
-      text-align: left;
+      margin: 0;
     }
 
     .benefits-list li {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.5rem;
-      color: #666;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
     }
 
     .benefits-list i {
-      color: #28a745;
+      color: #f59e0b;
     }
 
-    .payment-form {
-      margin-top: 1.5rem;
-    }
-
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: #555;
+    .label-with-icon {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
     }
 
     .form-control {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+    }
+
+    :host-context(.dark-theme) .form-control {
+        background: rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.1);
     }
 
     .form-control:focus {
-      outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+        border-color: #fbbf24;
+        box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1);
+        background: white;
+        outline: none;
     }
 
-    .spinning {
-      animation: spin 1s linear infinite;
+    :host-context(.dark-theme) .form-control:focus {
+        background: rgba(0, 0, 0, 0.3);
     }
 
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+    .btn-premium-gold {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: #78350f;
+        padding: 1rem;
+        border-radius: 14px;
+        font-weight: 800;
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(245, 158, 11, 0.2);
     }
+
+    .btn-premium-gold:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(245, 158, 11, 0.3);
+        filter: brightness(1.05);
+    }
+
+    .btn-premium-gold:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(30px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .small { font-size: 0.8rem; }
   `]
 })
 export class PaymentModalComponent {
@@ -278,4 +345,4 @@ export class PaymentModalComponent {
       this.paymentComplete.emit();
     }, 2000);
   }
-} 
+}
