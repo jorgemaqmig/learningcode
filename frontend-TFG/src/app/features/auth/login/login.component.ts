@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    
+
     if (!this.loginData.email || !this.loginData.password) {
       this.errorMessage = 'Por favor, completa todos los campos';
       return;
@@ -54,7 +54,7 @@ export class LoginComponent implements OnInit {
       })
     ).subscribe({
       next: (response) => {
-        
+
         if (response.success && response.user) {
           // Verificar que el token se haya guardado correctamente
           const token = this.authService.getToken();
@@ -75,7 +75,7 @@ export class LoginComponent implements OnInit {
         }
       },
       error: (error) => {
-        
+
         if (error.status === 401) {
           this.errorMessage = 'Email o contraseña incorrectos';
         } else if (error.status === 0) {
